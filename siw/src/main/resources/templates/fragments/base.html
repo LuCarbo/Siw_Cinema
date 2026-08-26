@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ? ${title} + ' | SIW Cinema' : 'SIW Cinema - Gestione Festival Cinematografici'">SIW Cinema</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header & Navbar Fragment -->
+    <header th:fragment="navbar" class="navbar">
+        <div class="container navbar-inner">
+            <a th:href="@{/}" class="logo">
+                <i class="fa-solid fa-film logo-icon"></i>
+                SIW <span>CINEMA</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a th:href="@{/}" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a th:href="@{/festivals}" class="nav-link"><i class="fa-solid fa-trophy"></i> Festival</a></li>
+                <li><a th:href="@{/films}" class="nav-link"><i class="fa-solid fa-clapperboard"></i> Film</a></li>
+                <li><a th:href="@{/proiezioni}" class="nav-link"><i class="fa-solid fa-calendar-days"></i> Proiezioni</a></li>
+                <li><a th:href="@{/explorer}" class="nav-link"><i class="fa-brands fa-react" style="color: #61dafb;"></i> Live Explorer</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <!-- Se l'utente è autenticato -->
+                <th:block th:if="${isLoggedIn}">
+                    <a th:if="${isAdmin}" th:href="@{/admin/dashboard}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-shield-halved"></i> Pannello Admin
+                    </a>
+                    
+                    <a th:href="@{/profilo}" class="btn btn-sm btn-secondary">
+                        <i class="fa-solid fa-user"></i>
+                        <span th:text="${currentCredentials.username}">User</span>
+                        <span th:if="${isAdmin}" class="badge badge-admin" style="margin-left: 0.3rem;">ADMIN</span>
+                    </a>
+
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" title="Logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </form>
+                </th:block>
+
+                <!-- Se l'utente è anonimo -->
+                <th:block th:unless="${isLoggedIn}">
+                    <a th:href="@{/login}" class="btn btn-sm btn-secondary">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Accedi
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-user-plus"></i> Registrati
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Alerts Fragment -->
+    <div th:fragment="alerts" class="container" style="margin-top: 1.5rem;">
+        <div th:if="${param.logout}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> Disconnessione effettuata con successo. A presto!
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${errorMessage}"></span>
+        </div>
+    </div>
+
+    <!-- Footer Fragment -->
+    <footer th:fragment="footer" class="footer">
+        <div class="container footer-inner">
+            <div>
+                <a th:href="@{/}" class="logo" style="font-size: 1.25rem;">
+                    <i class="fa-solid fa-film logo-icon"></i> SIW <span>CINEMA</span>
+                </a>
+                <p class="footer-text" style="margin-top: 0.5rem;">
+                    Piattaforma di gestione festival cinematografici, proiezioni e recensioni.
+                </p>
+            </div>
+            <div>
+                <p class="footer-text">
+                    Progetto Sistemi Informativi sul Web &bull; Università degli Studi Roma Tre
+                </p>
+                <p class="footer-text" style="margin-top: 0.25rem;">
+                    &copy; 2026 SIW Cinema. Tutti i diritti riservati.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

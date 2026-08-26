@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${recensione.id == null ? 'Scrivi Recensione' : 'Modifica Recensione'})}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        <div class="form-card">
+            
+            <!-- Film Context Header -->
+            <div style="display: flex; align-items: center; gap: 1.25rem; padding-bottom: 1.5rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border-color);">
+                <img th:src="${film.locandina != null ? film.locandina : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600'}" 
+                     alt="Locandina" style="width: 70px; height: 95px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--border-color);">
+                <div>
+                    <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); font-weight: 600;">Recensione per il film</span>
+                    <h2 style="font-size: 1.35rem; margin-top: 0.2rem;" th:text="${film.titolo}">Titolo Film</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <span th:text="${film.anno}">2024</span> &bull; 
+                        <span th:text="${film.genere}">Genere</span>
+                        <span th:if="${film.regista != null}" th:text="' &bull; Regia: ' + ${film.regista.nomeCompleto}">Regista</span>
+                    </p>
+                </div>
+            </div>
+
+            <form th:action="@{/recensioni/salva}" th:object="${recensione}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" name="filmId" th:value="${film.id}">
+
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+                </div>
+
+                <!-- Voto da 1 a 5 -->
+                <div class="form-group">
+                    <label class="form-label" for="voto">Valutazione (da 1 a 5 Stelle) *</label>
+                    <select id="voto" th:field="*{voto}" class="form-control" required style="font-size: 1.05rem; font-weight: 600; color: var(--accent-gold);">
+                        <option value="">-- Seleziona una valutazione --</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Stelle (Capolavoro)</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Stelle (Ottimo)</option>
+                        <option value="3">⭐⭐⭐ 3 Stelle (Buono)</option>
+                        <option value="2">⭐⭐ 2 Stelle (Discreto / Mediocre)</option>
+                        <option value="1">⭐ 1 Stella (Scarso)</option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('voto')}" th:errors="*{voto}" class="form-error"></span>
+                </div>
+
+                <!-- Titolo Recensione -->
+                <div class="form-group">
+                    <label class="form-label" for="titolo">Titolo della Recensione (opzionale)</label>
+                    <input type="text" id="titolo" th:field="*{titolo}" class="form-control" placeholder="Es. Un viaggio emozionante e visivamente sbalorditivo">
+                    <span th:if="${#fields.hasErrors('titolo')}" th:errors="*{titolo}" class="form-error"></span>
+                </div>
+
+                <!-- Testo Recensione -->
+                <div class="form-group">
+                    <label class="form-label" for="testo">La Tua Opinione / Testo della Recensione *</label>
+                    <textarea id="testo" th:field="*{testo}" class="form-control" style="min-height: 150px;" placeholder="Condividi cosa ti ha colpito della regia, della trama, della fotografia e della recitazione..." required></textarea>
+                    <span th:if="${#fields.hasErrors('testo')}" th:errors="*{testo}" class="form-error"></span>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fa-solid fa-paper-plane"></i> Pubblica Recensione
+                    </button>
+                    <a th:href="@{'/film/' + ${film.id}}" class="btn btn-secondary">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

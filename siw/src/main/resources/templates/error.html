@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Errore')}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+
+    <main class="main-content container" style="display: flex; align-items: center; justify-content: center; min-height: 60vh;">
+        <div class="form-card" style="text-align: center; max-width: 500px;">
+            <div style="font-size: 3.5rem; color: var(--accent-gold); margin-bottom: 1rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h1 class="form-title">Si è verificato un errore</h1>
+            <p class="form-subtitle" style="margin-bottom: 2rem;">
+                La pagina richiesta non è disponibile o non disponi dei permessi necessari per accedervi.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <a th:href="@{/}" class="btn btn-primary">
+                    <i class="fa-solid fa-house"></i> Torna alla Home
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Torna Indietro
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Dettaglio Proiezione')}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        
+        <div class="detail-banner" style="align-items: center; gap: 2.5rem;">
+            <div class="proj-time" style="width: 140px; height: 140px; border-radius: var(--radius-md); padding: 1rem;">
+                <span class="proj-date" style="font-size: 1rem;" th:text="${proiezione.data}">2026-08-28</span>
+                <span class="proj-hour" style="font-size: 2.25rem;" th:text="${proiezione.ora}">20:30</span>
+            </div>
+
+            <div class="detail-info">
+                <div style="margin-bottom: 0.5rem;">
+                    <span class="badge badge-scheduled" th:if="${proiezione.stato.name() == 'SCHEDULED'}" th:text="${proiezione.stato.label}">Programmata</span>
+                    <span class="badge badge-completed" th:if="${proiezione.stato.name() == 'COMPLETED'}" th:text="${proiezione.stato.label}">Completata</span>
+                    <span class="badge badge-cancelled" th:if="${proiezione.stato.name() == 'CANCELLED'}" th:text="${proiezione.stato.label}">Annullata</span>
+                </div>
+
+                <h1 class="detail-title">
+                    Proiezione di <a th:href="@{'/film/' + ${proiezione.film.id}}" th:text="${proiezione.film.titolo}" style="color: var(--accent-gold);">Titolo Film</a>
+                </h1>
+
+                <div class="detail-badges">
+                    <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--accent-gold);">
+                        <i class="fa-solid fa-trophy"></i> Festival: <a th:href="@{'/festival/' + ${proiezione.festival.id}}" th:text="${proiezione.festival.nome}" style="margin-left: 0.3rem; color: #fff;">Festival</a>
+                    </span>
+                    <span class="badge" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
+                        <i class="fa-solid fa-couch"></i> Sala: <a th:href="@{'/sala/' + ${proiezione.sala.id}}" th:text="${proiezione.sala.nome + ' (' + proiezione.sala.capienza + ' posti)'}" style="margin-left: 0.3rem; color: #fff;">Sala</a>
+                    </span>
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-secondary);">
+                        <i class="fa-solid fa-clock"></i> Durata film: <span th:text="${proiezione.film.durata} + ' min'" style="margin-left: 0.3rem;">120 min</span>
+                    </span>
+                </div>
+
+                <!-- Azioni Admin per cambio stato rapido -->
+                <div th:if="${isAdmin}" style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <form th:action="@{'/proiezioni/' + ${proiezione.id} + '/stato'}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Cambia stato:</span>
+                        <select name="stato" class="form-control" style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                            <option value="SCHEDULED" th:selected="${proiezione.stato.name() == 'SCHEDULED'}">Programmata</option>
+                            <option value="COMPLETED" th:selected="${proiezione.stato.name() == 'COMPLETED'}">Completata</option>
+                            <option value="CANCELLED" th:selected="${proiezione.stato.name() == 'CANCELLED'}">Annullata</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Aggiorna</button>
+                    </form>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a th:href="@{'/proiezioni/modifica/' + ${proiezione.id}}" class="btn btn-sm btn-secondary">
+                            <i class="fa-solid fa-pen"></i> Modifica
+                        </a>
+                        <a th:href="@{'/proiezioni/elimina/' + ${proiezione.id}}" onclick="return confirm('Eliminare questa proiezione?');" class="btn btn-sm btn-danger">
+                            <i class="fa-solid fa-trash"></i> Elimina
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheda Film e Informazioni Sala -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--accent-gold);">
+                    <i class="fa-solid fa-clapperboard"></i> Informazioni sul Film
+                </h3>
+                <p><strong>Titolo:</strong> <span th:text="${proiezione.film.titolo}">Titolo</span></p>
+                <p><strong>Genere:</strong> <span th:text="${proiezione.film.genere}">Genere</span></p>
+                <p><strong>Anno & Durata:</strong> <span th:text="${proiezione.film.anno + ' &bull; ' + proiezione.film.durata + ' min'}">2024</span></p>
+                <p><strong>Regista:</strong> <span th:text="${proiezione.film.regista != null ? proiezione.film.regista.nomeCompleto : 'Non specificato'}">Regista</span></p>
+                <a th:href="@{'/film/' + ${proiezione.film.id}}" class="btn btn-sm btn-outline" style="margin-top: 1rem;">
+                    Vai alla Scheda Film <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--accent-gold);">
+                    <i class="fa-solid fa-location-dot"></i> Informazioni sulla Sala
+                </h3>
+                <p><strong>Sala:</strong> <span th:text="${proiezione.sala.nome}">Nome Sala</span></p>
+                <p><strong>Indirizzo:</strong> <span th:text="${proiezione.sala.indirizzo}">Indirizzo</span></p>
+                <p><strong>Capienza:</strong> <span th:text="${proiezione.sala.capienza + ' posti a sedere'}">450 posti</span></p>
+                <a th:href="@{'/sala/' + ${proiezione.sala.id}}" class="btn btn-sm btn-outline" style="margin-top: 1rem;">
+                    Vai alla Scheda Sala <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

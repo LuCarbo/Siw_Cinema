@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${regista.id == null ? 'Nuovo Regista' : 'Modifica Regista'})}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        <div class="form-card">
+            <div class="form-header">
+                <span class="badge badge-admin" style="margin-bottom: 0.5rem;">Gestione Registi</span>
+                <h1 class="form-title" th:text="${regista.id == null ? 'Inserisci Nuovo Regista' : 'Modifica Regista'}">Nuovo Regista</h1>
+                <p class="form-subtitle">Inserisci le informazioni anagrafiche del regista</p>
+            </div>
+
+            <form th:action="@{/registi/salva}" th:object="${regista}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="nome">Nome *</label>
+                        <input type="text" id="nome" th:field="*{nome}" class="form-control" placeholder="Es. Christopher" required>
+                        <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="form-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="cognome">Cognome *</label>
+                        <input type="text" id="cognome" th:field="*{cognome}" class="form-control" placeholder="Es. Nolan" required>
+                        <span th:if="${#fields.hasErrors('cognome')}" th:errors="*{cognome}" class="form-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="dataNascita">Data di Nascita *</label>
+                        <input type="date" id="dataNascita" th:field="*{dataNascita}" class="form-control" required>
+                        <span th:if="${#fields.hasErrors('dataNascita')}" th:errors="*{dataNascita}" class="form-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="nazionalita">Nazionalità *</label>
+                        <input type="text" id="nazionalita" th:field="*{nazionalita}" class="form-control" placeholder="Es. Britannica" required>
+                        <span th:if="${#fields.hasErrors('nazionalita')}" th:errors="*{nazionalita}" class="form-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="foto">URL Foto / Ritratto (opzionale)</label>
+                    <input type="url" id="foto" th:field="*{foto}" class="form-control" placeholder="https://esempio.it/foto.jpg">
+                    <span th:if="${#fields.hasErrors('foto')}" th:errors="*{foto}" class="form-error"></span>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Salva Regista
+                    </button>
+                    <a th:href="@{/registi}" class="btn btn-secondary">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

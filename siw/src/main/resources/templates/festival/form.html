@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${festival.id == null ? 'Nuovo Festival' : 'Modifica Festival'})}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        <div class="form-card">
+            <div class="form-header">
+                <span class="badge badge-admin" style="margin-bottom: 0.5rem;">Gestione Festival</span>
+                <h1 class="form-title" th:text="${festival.id == null ? 'Inserisci Nuovo Festival' : 'Modifica Festival'}">Nuovo Festival</h1>
+                <p class="form-subtitle">Compila tutti i campi obbligatori per salvare il festival</p>
+            </div>
+
+            <form th:action="@{/festivals/salva}" th:object="${festival}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <!-- Errore Globale Duplicati -->
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="nome">Nome Festival *</label>
+                    <input type="text" id="nome" th:field="*{nome}" class="form-control" placeholder="Es. Mostra Internazionale del Cinema di Venezia" required>
+                    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="form-error"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="anno">Anno Edizione *</label>
+                        <input type="number" id="anno" th:field="*{anno}" class="form-control" placeholder="2026" min="1900" max="2100" required>
+                        <span th:if="${#fields.hasErrors('anno')}" th:errors="*{anno}" class="form-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="citta">Città *</label>
+                        <input type="text" id="citta" th:field="*{citta}" class="form-control" placeholder="Es. Venezia" required>
+                        <span th:if="${#fields.hasErrors('citta')}" th:errors="*{citta}" class="form-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="dataInizio">Data Inizio *</label>
+                        <input type="date" id="dataInizio" th:field="*{dataInizio}" class="form-control" required>
+                        <span th:if="${#fields.hasErrors('dataInizio')}" th:errors="*{dataInizio}" class="form-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dataFine">Data Fine *</label>
+                        <input type="date" id="dataFine" th:field="*{dataFine}" class="form-control" required>
+                        <span th:if="${#fields.hasErrors('dataFine')}" th:errors="*{dataFine}" class="form-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="immagine">URL Banner / Immagine (opzionale)</label>
+                    <input type="url" id="immagine" th:field="*{immagine}" class="form-control" placeholder="https://esempio.it/immagine.jpg">
+                    <span th:if="${#fields.hasErrors('immagine')}" th:errors="*{immagine}" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="descrizione">Descrizione del Festival</label>
+                    <textarea id="descrizione" th:field="*{descrizione}" class="form-control" placeholder="Presentazione, storia, sezioni e programma del festival..."></textarea>
+                    <span th:if="${#fields.hasErrors('descrizione')}" th:errors="*{descrizione}" class="form-error"></span>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Salva Festival
+                    </button>
+                    <a th:href="@{/festivals}" class="btn btn-secondary">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

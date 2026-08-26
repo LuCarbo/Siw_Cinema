@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Gestione Film Festival')}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        
+        <div style="margin-bottom: 2rem;">
+            <a th:href="@{'/festival/' + ${festival.id}}" class="btn btn-sm btn-secondary" style="margin-bottom: 1rem;">
+                <i class="fa-solid fa-arrow-left"></i> Torna a <span th:text="${festival.nome}">Festival</span>
+            </a>
+            <h1 class="section-title">Gestione Selezione Film</h1>
+            <p style="color: var(--text-secondary);">Associa o rimuovi i film che partecipano all'edizione <strong th:text="${festival.anno}" style="color: var(--accent-gold);">2026</strong> di <strong th:text="${festival.nome}" style="color: var(--text-primary);">Festival</strong></p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;">
+            
+            <!-- Film Attualmente nel Festival -->
+            <div>
+                <h2 class="section-title" style="font-size: 1.35rem; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i> Film Partecipanti (<span th:text="${festival.film.size()}">0</span>)
+                </h2>
+
+                <div th:if="${!festival.film.isEmpty()}" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div th:each="film : ${festival.film}" style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="font-size: 1.05rem; margin-bottom: 0.2rem;">
+                                <a th:href="@{'/film/' + ${film.id}}" th:text="${film.titolo}" style="color: var(--text-primary);">Titolo Film</a>
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                                <span th:text="${film.anno}">2024</span> &bull; 
+                                <span th:text="${film.genere}">Genere</span> &bull; 
+                                Regia: <span th:text="${film.regista != null ? film.regista.nomeCompleto : 'Nessuno'}">Regista</span>
+                            </p>
+                        </div>
+                        <form th:action="@{'/festivals/' + ${festival.id} + '/film/rimuovi/' + ${film.id}}" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Rimuovi dal Festival">
+                                <i class="fa-solid fa-xmark"></i> Rimuovi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${festival.film.isEmpty()}" style="padding: 2.5rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <i class="fa-solid fa-film" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                    <p style="color: var(--text-secondary);">Nessun film ancora presente nel festival.</p>
+                </div>
+            </div>
+
+            <!-- Film Disponibili da Aggiungere -->
+            <div>
+                <h2 class="section-title" style="font-size: 1.35rem; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-plus-circle" style="color: var(--accent-gold);"></i> Aggiungi Altri Film (<span th:text="${availableFilms.size()}">0</span>)
+                </h2>
+
+                <div th:if="${!availableFilms.isEmpty()}" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div th:each="film : ${availableFilms}" style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="font-size: 1.05rem; margin-bottom: 0.2rem;" th:text="${film.titolo}">Titolo Film</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                                <span th:text="${film.anno}">2024</span> &bull; 
+                                <span th:text="${film.genere}">Genere</span> &bull; 
+                                Regia: <span th:text="${film.regista != null ? film.regista.nomeCompleto : 'Nessuno'}">Regista</span>
+                            </p>
+                        </div>
+                        <form th:action="@{'/festivals/' + ${festival.id} + '/film/aggiungi'}" method="post">
+                            <input type="hidden" name="filmId" th:value="${film.id}">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-plus"></i> Aggiungi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${availableFilms.isEmpty()}" style="padding: 2.5rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <i class="fa-solid fa-circle-check" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 0.5rem;"></i>
+                    <p style="color: var(--text-secondary);">Tutti i film presenti nel catalogo sono già associati a questo festival.</p>
+                    <a th:href="@{/films/nuovo}" class="btn btn-sm btn-secondary" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-plus"></i> Crea un nuovo film
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Catalogo Festival')}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+            <div>
+                <h1 class="section-title">I Festival Cinematografici</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.25rem;">Tutte le edizioni e le rassegne in programma</p>
+            </div>
+            <div th:if="${isAdmin}">
+                <a th:href="@{/festivals/nuovo}" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Nuovo Festival
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtri di ricerca -->
+        <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 2.5rem;">
+            <form th:action="@{/festivals}" method="get" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" name="nome" th:value="${nome}" placeholder="Filtra per nome festival..." class="form-control" style="flex: 2; min-width: 220px;">
+                <input type="text" name="citta" th:value="${citta}" placeholder="Filtra per città..." class="form-control" style="flex: 1; min-width: 180px;">
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fa-solid fa-filter"></i> Filtra
+                </button>
+                <a th:href="@{/festivals}" class="btn btn-outline" th:if="${nome != null or citta != null}">Reset</a>
+            </form>
+        </div>
+
+        <!-- Lista Festival -->
+        <div class="cards-grid-lg" th:if="${!festivals.isEmpty()}">
+            <div th:each="festival : ${festivals}" class="festival-card">
+                <div class="card-image-wrap">
+                    <img th:src="${festival.immagine != null ? festival.immagine : 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=1200'}" 
+                         alt="Immagine Festival" class="card-image">
+                    <div class="card-badge-top" th:text="${festival.anno}">2026</div>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <a th:href="@{'/festival/' + ${festival.id}}" th:text="${festival.nome}">Nome Festival</a>
+                    </h3>
+                    <div class="card-meta">
+                        <span><i class="fa-solid fa-location-dot" style="color: var(--accent-gold);"></i> <span th:text="${festival.citta}">Città</span></span>
+                        <span><i class="fa-regular fa-calendar" style="color: var(--accent-gold);"></i> <span th:text="${festival.dataInizio + ' - ' + festival.dataFine}">Date</span></span>
+                        <span><i class="fa-solid fa-film" style="color: var(--accent-gold);"></i> <span th:text="${festival.film.size() + ' Film'}">0 Film</span></span>
+                    </div>
+                    <p class="card-desc" th:text="${festival.descrizione}">Descrizione festival...</p>
+                    <div class="card-footer">
+                        <a th:href="@{'/festival/' + ${festival.id}}" class="btn btn-sm btn-outline">
+                            Dettagli & Programma <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                        <div th:if="${isAdmin}" style="display: flex; gap: 0.35rem;">
+                            <a th:href="@{'/festivals/modifica/' + ${festival.id}}" class="btn btn-sm btn-secondary" title="Modifica"><i class="fa-solid fa-pen"></i></a>
+                            <a th:href="@{'/festivals/elimina/' + ${festival.id}}" 
+                               onclick="return confirm('Eliminare questo festival?');" class="btn btn-sm btn-danger" title="Elimina"><i class="fa-solid fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${festivals.isEmpty()}" style="text-align: center; padding: 4rem 0;">
+            <i class="fa-solid fa-film" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+            <h3>Nessun festival trovato</h3>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Non ci sono festival corrispondenti ai criteri di ricerca.</p>
+        </div>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

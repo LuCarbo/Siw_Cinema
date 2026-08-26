@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Home')}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <p class="hero-subtitle">Benvenuto su SIW Cinema</p>
+            <h1 class="hero-title">I Grandi Festival del Cinema,<br>in un'Unica Piattaforma</h1>
+            <p class="hero-description">
+                Esplora i più prestigiosi festival cinematografici, scopri i film in concorso, consulta il calendario delle proiezioni e condividi le tue recensioni con la community.
+            </p>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a th:href="@{/festivals}" class="btn btn-primary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
+                    <i class="fa-solid fa-trophy"></i> Esplora Festival
+                </a>
+                <a th:href="@{/films}" class="btn btn-secondary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
+                    <i class="fa-solid fa-clapperboard"></i> Catalogo Film
+                </a>
+                <a th:href="@{/explorer}" class="btn btn-outline" style="padding: 0.85rem 1.75rem; font-size: 1rem; border-color: #61dafb; color: #61dafb;">
+                    <i class="fa-brands fa-react"></i> Live Explorer (React)
+                </a>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${numFestivals}">3</div>
+                <div class="stat-label">Festival Attivi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${numFilms}">5</div>
+                <div class="stat-label">Film in Rassegna</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${numRegisti}">5</div>
+                <div class="stat-label">Registi Internazionali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${numSale}">4</div>
+                <div class="stat-label">Sale Cinematografiche</div>
+            </div>
+        </section>
+
+        <!-- Featured Festivals Section -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Festival in Evidenza</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Le kermesse cinematografiche più attese della stagione</p>
+                </div>
+                <a th:href="@{/festivals}" class="section-link">Tutti i festival <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="cards-grid-lg">
+                <div th:each="festival : ${festivals}" class="festival-card">
+                    <div class="card-image-wrap">
+                        <img th:src="${festival.immagine != null ? festival.immagine : 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=1200'}" 
+                             alt="Immagine Festival" class="card-image">
+                        <div class="card-badge-top" th:text="${festival.anno}">2026</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <a th:href="@{'/festival/' + ${festival.id}}" th:text="${festival.nome}">Nome Festival</a>
+                        </h3>
+                        <div class="card-meta">
+                            <span><i class="fa-solid fa-location-dot" style="color: var(--accent-gold);"></i> <span th:text="${festival.citta}">Città</span></span>
+                            <span><i class="fa-regular fa-calendar" style="color: var(--accent-gold);"></i> <span th:text="${festival.dataInizio + ' - ' + festival.dataFine}">Date</span></span>
+                            <span><i class="fa-solid fa-film" style="color: var(--accent-gold);"></i> <span th:text="${festival.film.size() + ' Film'}">0 Film</span></span>
+                        </div>
+                        <p class="card-desc" th:text="${festival.descrizione}">Descrizione festival...</p>
+                        <div class="card-footer">
+                            <a th:href="@{'/festival/' + ${festival.id}}" class="btn btn-sm btn-outline">
+                                Programma Completo <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);" th:text="${festival.proiezioni.size() + ' Proiezioni'}">0 Proiezioni</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Rated Films Section -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Film in Programma</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Opere presentate e acclamate dalla critica</p>
+                </div>
+                <a th:href="@{/films}" class="section-link">Tutti i film <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="cards-grid">
+                <div th:each="film : ${films}" class="film-card">
+                    <div class="film-poster">
+                        <img th:src="${film.locandina != null ? film.locandina : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600'}" 
+                             alt="Locandina Film">
+                        <div class="film-score">
+                            <i class="fa-solid fa-star"></i>
+                            <span th:text="${film.getMediaVoti() > 0 ? film.getMediaVoti() + ' / 5' : 'N/D'}">5.0</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="font-size: 1.15rem;">
+                            <a th:href="@{'/film/' + ${film.id}}" th:text="${film.titolo}">Titolo Film</a>
+                        </h3>
+                        <div class="card-meta" style="margin-bottom: 0.75rem;">
+                            <span th:text="${film.anno}">2024</span> &bull; 
+                            <span th:text="${film.genere}">Genere</span> &bull; 
+                            <span th:text="${film.durata + ' min'}">120 min</span>
+                        </div>
+                        <p th:if="${film.regista != null}" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Regia: <strong th:text="${film.regista.nomeCompleto}" style="color: var(--text-primary);">Nome Regista</strong>
+                        </p>
+                        <div class="card-footer">
+                            <a th:href="@{'/film/' + ${film.id}}" class="btn btn-sm btn-secondary" style="width: 100%;">
+                                Dettagli e Recensioni
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Projections -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Prossime Proiezioni</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Orari e sale delle proiezioni in programma</p>
+                </div>
+                <a th:href="@{/proiezioni}" class="section-link">Calendario completo <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div>
+                <div th:each="p : ${proiezioni}" class="projection-item">
+                    <div class="proj-time">
+                        <span class="proj-date" th:text="${p.data}">2026-08-28</span>
+                        <span class="proj-hour" th:text="${p.ora}">20:30</span>
+                    </div>
+                    <div class="proj-details">
+                        <h4 class="proj-film">
+                            <a th:href="@{'/film/' + ${p.film.id}}" th:text="${p.film.titolo}">Titolo Film</a>
+                        </h4>
+                        <div class="proj-meta">
+                            <span><i class="fa-solid fa-trophy" style="color: var(--accent-gold);"></i> <span th:text="${p.festival.nome}">Festival</span></span>
+                            <span><i class="fa-solid fa-couch" style="color: var(--accent-gold);"></i> <span th:text="${p.sala.nome + ' (' + p.sala.indirizzo + ')'}">Sala</span></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="badge badge-scheduled" th:if="${p.stato.name() == 'SCHEDULED'}" th:text="${p.stato.label}">Programmata</span>
+                        <span class="badge badge-completed" th:if="${p.stato.name() == 'COMPLETED'}" th:text="${p.stato.label}">Completata</span>
+                        <span class="badge badge-cancelled" th:if="${p.stato.name() == 'CANCELLED'}" th:text="${p.stato.label}">Annullata</span>
+                        <a th:href="@{'/proiezione/' + ${p.id}}" class="btn btn-sm btn-secondary">Dettagli</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>
