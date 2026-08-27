@@ -18,13 +18,13 @@
                 </div>
                 <h1 class="detail-title" th:text="${festival.nome}">Nome Festival</h1>
                 <div class="detail-badges">
-                    <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--accent-gold);">
+                    <span class="badge" style="background: var(--accent-primary-light); color: #c7d2fe; border: 1px solid var(--accent-primary-border);">
                         <i class="fa-solid fa-location-dot"></i> <span th:text="${festival.citta}" style="margin-left: 0.3rem;">Città</span>
                     </span>
-                    <span class="badge" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
+                    <span class="badge" style="background: rgba(56,189,248,0.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.25);">
                         <i class="fa-regular fa-calendar"></i> <span th:text="${festival.dataInizio + ' - ' + festival.dataFine}" style="margin-left: 0.3rem;">Date</span>
                     </span>
-                    <span class="badge" style="background: rgba(16,185,129,0.15); color: #6ee7b7;">
+                    <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25);">
                         <i class="fa-solid fa-film"></i> <span th:text="${festival.film.size() + ' Film Presentati'}" style="margin-left: 0.3rem;">0 Film</span>
                     </span>
                 </div>
@@ -122,8 +122,8 @@
                             <a th:href="@{'/film/' + ${p.film.id}}" th:text="${p.film.titolo}">Titolo Film</a>
                         </h4>
                         <div class="proj-meta">
-                            <span><i class="fa-solid fa-couch" style="color: var(--accent-gold);"></i> <span th:text="${p.sala.nome + ' - ' + p.sala.indirizzo}">Sala</span></span>
-                            <span><i class="fa-solid fa-users" style="color: var(--accent-gold);"></i> <span th:text="'Capienza: ' + ${p.sala.capienza} + ' posti'">0 posti</span></span>
+                            <span><i class="fa-solid fa-couch" style="color: var(--accent-primary);"></i> <span th:text="${p.sala.nome + ' - ' + p.sala.indirizzo}">Sala</span></span>
+                            <span><i class="fa-solid fa-users" style="color: var(--accent-primary);"></i> <span th:text="'Capienza: ' + ${p.sala.capienza} + ' posti'">0 posti</span></span>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">

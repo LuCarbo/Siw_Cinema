@@ -16,15 +16,15 @@
                 Esplora i più prestigiosi festival cinematografici, scopri i film in concorso, consulta il calendario delle proiezioni e condividi le tue recensioni con la community.
             </p>
 
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
-                <a th:href="@{/festivals}" class="btn btn-primary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.75rem;">
+                <a th:href="@{/festivals}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
                     <i class="fa-solid fa-trophy"></i> Esplora Festival
                 </a>
-                <a th:href="@{/films}" class="btn btn-secondary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
-                    <i class="fa-solid fa-clapperboard"></i> Catalogo Film
+                <a th:href="@{/films}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+                    <i class="fa-solid fa-clapperboard"></i> Catalogo & Ricerca Film
                 </a>
-                <a th:href="@{/explorer}" class="btn btn-outline" style="padding: 0.85rem 1.75rem; font-size: 1rem; border-color: #61dafb; color: #61dafb;">
-                    <i class="fa-brands fa-react"></i> Live Explorer (React)
+                <a th:href="@{/proiezioni}" class="btn btn-outline" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+                    <i class="fa-solid fa-calendar-days"></i> Calendario Proiezioni
                 </a>
             </div>
         </section>
@@ -71,9 +71,9 @@
                             <a th:href="@{'/festival/' + ${festival.id}}" th:text="${festival.nome}">Nome Festival</a>
                         </h3>
                         <div class="card-meta">
-                            <span><i class="fa-solid fa-location-dot" style="color: var(--accent-gold);"></i> <span th:text="${festival.citta}">Città</span></span>
-                            <span><i class="fa-regular fa-calendar" style="color: var(--accent-gold);"></i> <span th:text="${festival.dataInizio + ' - ' + festival.dataFine}">Date</span></span>
-                            <span><i class="fa-solid fa-film" style="color: var(--accent-gold);"></i> <span th:text="${festival.film.size() + ' Film'}">0 Film</span></span>
+                            <span><i class="fa-solid fa-location-dot" style="color: var(--accent-primary);"></i> <span th:text="${festival.citta}">Città</span></span>
+                            <span><i class="fa-regular fa-calendar" style="color: var(--accent-primary);"></i> <span th:text="${festival.dataInizio + ' - ' + festival.dataFine}">Date</span></span>
+                            <span><i class="fa-solid fa-film" style="color: var(--accent-primary);"></i> <span th:text="${festival.film.size() + ' Film'}">0 Film</span></span>
                         </div>
                         <p class="card-desc" th:text="${festival.descrizione}">Descrizione festival...</p>
                         <div class="card-footer">
@@ -150,8 +150,8 @@
                             <a th:href="@{'/film/' + ${p.film.id}}" th:text="${p.film.titolo}">Titolo Film</a>
                         </h4>
                         <div class="proj-meta">
-                            <span><i class="fa-solid fa-trophy" style="color: var(--accent-gold);"></i> <span th:text="${p.festival.nome}">Festival</span></span>
-                            <span><i class="fa-solid fa-couch" style="color: var(--accent-gold);"></i> <span th:text="${p.sala.nome + ' (' + p.sala.indirizzo + ')'}">Sala</span></span>
+                            <span><i class="fa-solid fa-trophy" style="color: var(--accent-primary);"></i> <span th:text="${p.festival.nome}">Festival</span></span>
+                            <span><i class="fa-solid fa-couch" style="color: var(--accent-primary);"></i> <span th:text="${p.sala.nome + ' (' + p.sala.indirizzo + ')'}">Sala</span></span>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">

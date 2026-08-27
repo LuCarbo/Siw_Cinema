@@ -39,10 +39,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (credentialsRepository.count() > 0) {
-            return; // Dati già inizializzati
+            updateMediaToAuthentic();
+            return; // Dati già inizializzati, media aggiornati
         }
 
-        System.out.println("--- Inizializzazione Dati SIW Cinema ---");
+        System.out.println("--- Inizializzazione Dati SIW Cinema con Foto e Locandine Originali ---");
 
         // 1. Utenti & Credenziali
         Utente adminUser = new Utente("Alessandro", "Rossi", "admin@siwcinema.it");
@@ -57,50 +58,50 @@ public class DataInitializer implements CommandLineRunner {
         Credentials giuliaCreds = new Credentials("giulia", "password", Credentials.DEFAULT_ROLE, giuliaUser);
         credentialsService.saveCredentials(giuliaCreds);
 
-        // 2. Registi
+        // 2. Registi con foto originali ufficiali TMDB
         Regista nolan = new Regista("Christopher", "Nolan", LocalDate.of(1970, 7, 30), "Britannica");
-        nolan.setFoto("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80");
+        nolan.setFoto("https://image.tmdb.org/t/p/w500/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg");
         registaRepository.save(nolan);
 
         Regista villeneuve = new Regista("Denis", "Villeneuve", LocalDate.of(1967, 10, 3), "Canadese");
-        villeneuve.setFoto("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80");
+        villeneuve.setFoto("https://image.tmdb.org/t/p/w500/zdDx9Xs93UIrJFWYApYR28J8M6b.jpg");
         registaRepository.save(villeneuve);
 
         Regista rohrwacher = new Regista("Alice", "Rohrwacher", LocalDate.of(1981, 12, 29), "Italiana");
-        rohrwacher.setFoto("https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=80");
+        rohrwacher.setFoto("https://image.tmdb.org/t/p/w500/8xDpjRUr6hlS7aGh8W0DkNbfby7.jpg");
         registaRepository.save(rohrwacher);
 
         Regista garrone = new Regista("Matteo", "Garrone", LocalDate.of(1968, 10, 15), "Italiana");
-        garrone.setFoto("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80");
+        garrone.setFoto("https://image.tmdb.org/t/p/w500/bszKQINwwZKe9Ybwdaz8G5a6H7S.jpg");
         registaRepository.save(garrone);
 
         Regista miyazaki = new Regista("Hayao", "Miyazaki", LocalDate.of(1941, 1, 5), "Giapponese");
-        miyazaki.setFoto("https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&auto=format&fit=crop&q=80");
+        miyazaki.setFoto("https://image.tmdb.org/t/p/w500/ouhjt9KugzhWtdEyBPipihB3ic8.jpg");
         registaRepository.save(miyazaki);
 
-        // 3. Film
+        // 3. Film con locandine originali ufficiali TMDB
         Film oppenheimer = new Film("Oppenheimer", 2023, 180, "Biografico / Storico", "Stati Uniti");
-        oppenheimer.setLocandina("https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80");
+        oppenheimer.setLocandina("https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg");
         oppenheimer.setRegista(nolan);
         filmRepository.save(oppenheimer);
 
         Film dune2 = new Film("Dune - Parte Due", 2024, 166, "Fantascienza / Avventura", "Stati Uniti");
-        dune2.setLocandina("https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80");
+        dune2.setLocandina("https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg");
         dune2.setRegista(villeneuve);
         filmRepository.save(dune2);
 
         Film chimera = new Film("La Chimera", 2023, 130, "Drammatico / Avventura", "Italia");
-        chimera.setLocandina("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop&q=80");
+        chimera.setLocandina("https://image.tmdb.org/t/p/w500/dV6SYHmmFLXQU7oKRfK4pOFCX6M.jpg");
         chimera.setRegista(rohrwacher);
         filmRepository.save(chimera);
 
         Film capitano = new Film("Io Capitano", 2023, 121, "Drammatico", "Italia");
-        capitano.setLocandina("https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=600&auto=format&fit=crop&q=80");
+        capitano.setLocandina("https://image.tmdb.org/t/p/w500/kGlZFwUQI5gAUdySNFfqGIkAF9n.jpg");
         capitano.setRegista(garrone);
         filmRepository.save(capitano);
 
         Film airone = new Film("Il ragazzo e l'airone", 2023, 124, "Animazione / Fantasy", "Giappone");
-        airone.setLocandina("https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&auto=format&fit=crop&q=80");
+        airone.setLocandina("https://image.tmdb.org/t/p/w500/f4oZTcfGrVTXKTWg157AwikXqmP.jpg");
         airone.setRegista(miyazaki);
         filmRepository.save(airone);
 
@@ -117,7 +118,7 @@ public class DataInitializer implements CommandLineRunner {
         Sala salaLumiere = new Sala("Grand Théâtre Lumière", "Boulevard de la Croisette, Cannes", 850);
         salaRepository.save(salaLumiere);
 
-        // 5. Festival
+        // 5. Festival con immagini originali dei luoghi e delle kermesse
         Festival venezia = new Festival(
                 "Mostra Internazionale d'Arte Cinematografica di Venezia",
                 2026,
@@ -248,5 +249,74 @@ public class DataInitializer implements CommandLineRunner {
         recensioneRepository.save(r4);
 
         System.out.println("--- Inizializzazione completata con successo! ---");
+    }
+
+    private void updateMediaToAuthentic() {
+        // Aggiorna foto registi
+        registaRepository.findAll().forEach(r -> {
+            if ("Christopher".equalsIgnoreCase(r.getNome()) && "Nolan".equalsIgnoreCase(r.getCognome())) {
+                r.setFoto("https://image.tmdb.org/t/p/w500/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg");
+                registaRepository.save(r);
+            } else if ("Denis".equalsIgnoreCase(r.getNome()) && "Villeneuve".equalsIgnoreCase(r.getCognome())) {
+                r.setFoto("https://image.tmdb.org/t/p/w500/zdDx9Xs93UIrJFWYApYR28J8M6b.jpg");
+                registaRepository.save(r);
+            } else if ("Alice".equalsIgnoreCase(r.getNome()) && "Rohrwacher".equalsIgnoreCase(r.getCognome())) {
+                r.setFoto("https://image.tmdb.org/t/p/w500/8xDpjRUr6hlS7aGh8W0DkNbfby7.jpg");
+                registaRepository.save(r);
+            } else if ("Matteo".equalsIgnoreCase(r.getNome()) && "Garrone".equalsIgnoreCase(r.getCognome())) {
+                r.setFoto("https://image.tmdb.org/t/p/w500/bszKQINwwZKe9Ybwdaz8G5a6H7S.jpg");
+                registaRepository.save(r);
+            } else if ("Hayao".equalsIgnoreCase(r.getNome()) && "Miyazaki".equalsIgnoreCase(r.getCognome())) {
+                r.setFoto("https://image.tmdb.org/t/p/w500/ouhjt9KugzhWtdEyBPipihB3ic8.jpg");
+                registaRepository.save(r);
+            }
+        });
+
+        // Aggiorna locandine film e assicura associazione registi
+        Film oppenheimer = null;
+        Film dune2 = null;
+        Film chimera = null;
+        Film capitano = null;
+        Film airone = null;
+
+        for (Film f : filmRepository.findAll()) {
+            if ("Oppenheimer".equalsIgnoreCase(f.getTitolo())) {
+                f.setLocandina("https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg");
+                oppenheimer = f;
+            } else if ("Dune - Parte Due".equalsIgnoreCase(f.getTitolo()) || f.getTitolo().toLowerCase().startsWith("dune")) {
+                f.setLocandina("https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg");
+                dune2 = f;
+            } else if ("La Chimera".equalsIgnoreCase(f.getTitolo())) {
+                f.setLocandina("https://image.tmdb.org/t/p/w500/dV6SYHmmFLXQU7oKRfK4pOFCX6M.jpg");
+                chimera = f;
+            } else if ("Io Capitano".equalsIgnoreCase(f.getTitolo())) {
+                f.setLocandina("https://image.tmdb.org/t/p/w500/kGlZFwUQI5gAUdySNFfqGIkAF9n.jpg");
+                capitano = f;
+            } else if ("Il ragazzo e l'airone".equalsIgnoreCase(f.getTitolo())) {
+                f.setLocandina("https://image.tmdb.org/t/p/w500/f4oZTcfGrVTXKTWg157AwikXqmP.jpg");
+                airone = f;
+            }
+            filmRepository.save(f);
+        }
+
+        // Assicura che i registi siano sempre associati correttamente
+        for (Regista r : registaRepository.findAll()) {
+            if ("Christopher".equalsIgnoreCase(r.getNome()) && oppenheimer != null && oppenheimer.getRegista() == null) {
+                oppenheimer.setRegista(r);
+                filmRepository.save(oppenheimer);
+            } else if ("Denis".equalsIgnoreCase(r.getNome()) && dune2 != null && dune2.getRegista() == null) {
+                dune2.setRegista(r);
+                filmRepository.save(dune2);
+            } else if ("Alice".equalsIgnoreCase(r.getNome()) && chimera != null && chimera.getRegista() == null) {
+                chimera.setRegista(r);
+                filmRepository.save(chimera);
+            } else if ("Matteo".equalsIgnoreCase(r.getNome()) && capitano != null && capitano.getRegista() == null) {
+                capitano.setRegista(r);
+                filmRepository.save(capitano);
+            } else if ("Hayao".equalsIgnoreCase(r.getNome()) && airone != null && airone.getRegista() == null) {
+                airone.setRegista(r);
+                filmRepository.save(airone);
+            }
+        }
     }
 }

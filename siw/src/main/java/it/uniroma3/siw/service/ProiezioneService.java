@@ -46,6 +46,25 @@ public class ProiezioneService {
     }
 
     @Transactional(readOnly = true)
+    public List<Proiezione> getProiezioniByData(LocalDate data) {
+        if (data == null) {
+            return getAllProiezioni();
+        }
+        return proiezioneRepository.findByDataOrderByOraAsc(data);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Proiezione> searchProiezioni(Long festivalId, Long filmId, Long salaId, LocalDate data) {
+        List<Proiezione> list = getAllProiezioni();
+        return list.stream()
+                .filter(p -> festivalId == null || (p.getFestival() != null && p.getFestival().getId().equals(festivalId)))
+                .filter(p -> filmId == null || (p.getFilm() != null && p.getFilm().getId().equals(filmId)))
+                .filter(p -> salaId == null || (p.getSala() != null && p.getSala().getId().equals(salaId)))
+                .filter(p -> data == null || (p.getData() != null && p.getData().equals(data)))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Proiezione> getUpcomingProiezioni() {
         return proiezioneRepository.findByDataGreaterThanEqualOrderByDataAscOraAsc(LocalDate.now());
     }

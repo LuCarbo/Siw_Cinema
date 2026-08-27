@@ -1,17 +1,13 @@
 package it.uniroma3.siw.controller.rest;
 
 import it.uniroma3.siw.dto.ProiezioneDTO;
-import it.uniroma3.siw.model.Festival;
-import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.model.Proiezione;
-import it.uniroma3.siw.model.Sala;
-import it.uniroma3.siw.service.FestivalService;
-import it.uniroma3.siw.service.FilmService;
 import it.uniroma3.siw.service.ProiezioneService;
-import it.uniroma3.siw.service.SalaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,32 +18,12 @@ public class ProiezioneRestController {
     @Autowired
     private ProiezioneService proiezioneService;
 
-    @Autowired
-    private FestivalService festivalService;
-
-    @Autowired
-    private FilmService filmService;
-
-    @Autowired
-    private SalaService salaService;
-
     @GetMapping
     public List<ProiezioneDTO> getProiezioni(@RequestParam(value = "festivalId", required = false) Long festivalId,
                                              @RequestParam(value = "filmId", required = false) Long filmId,
-                                             @RequestParam(value = "salaId", required = false) Long salaId) {
-        List<Proiezione> list;
-        if (festivalId != null) {
-            Festival f = festivalService.getFestival(festivalId);
-            list = (f != null) ? proiezioneService.getProiezioniByFestival(f) : List.of();
-        } else if (filmId != null) {
-            Film film = filmService.getFilm(filmId);
-            list = (film != null) ? proiezioneService.getProiezioniByFilm(film) : List.of();
-        } else if (salaId != null) {
-            Sala sala = salaService.getSala(salaId);
-            list = (sala != null) ? proiezioneService.getProiezioniBySala(sala) : List.of();
-        } else {
-            list = proiezioneService.getAllProiezioni();
-        }
+                                             @RequestParam(value = "salaId", required = false) Long salaId,
+                                             @RequestParam(value = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+        List<Proiezione> list = proiezioneService.searchProiezioni(festivalId, filmId, salaId, data);
         return list.stream().map(ProiezioneDTO::new).toList();
     }
 

@@ -11,6 +11,7 @@
         <!-- Film Detail Banner -->
         <div class="detail-banner">
             <img th:src="${film.locandina != null ? film.locandina : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600'}" 
+                 referrerpolicy="no-referrer"
                  alt="Locandina" class="detail-poster">
             <div class="detail-info">
                 <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
@@ -22,27 +23,27 @@
                 <h1 class="detail-title" th:text="${film.titolo}">Titolo Film</h1>
                 
                 <div class="detail-badges">
-                    <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--accent-gold); font-size: 0.85rem;">
+                    <span class="badge" style="background: var(--accent-primary-light); color: #c7d2fe; border: 1px solid var(--accent-primary-border); font-size: 0.825rem;">
                         <i class="fa-solid fa-masks-theater"></i> <span th:text="${film.genere}" style="margin-left: 0.3rem;">Genere</span>
                     </span>
-                    <span class="badge" style="background: rgba(16,185,129,0.15); color: #6ee7b7; font-size: 0.85rem;">
-                        <i class="fa-solid fa-star"></i> 
+                    <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); font-size: 0.825rem;">
+                        <i class="fa-solid fa-star" style="color: var(--accent-amber);"></i> 
                         <span th:text="${film.getMediaVoti() > 0 ? film.getMediaVoti() + ' / 5 (' + film.getNumeroRecensioni() + ' recensioni)' : 'Nessuna recensione'}" style="margin-left: 0.3rem;">Voto</span>
                     </span>
                 </div>
 
                 <!-- Info Regista -->
-                <div style="margin: 1rem 0; padding: 0.85rem 1.25rem; background: rgba(0,0,0,0.25); border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 1rem; width: fit-content;">
-                    <i class="fa-solid fa-video" style="color: var(--accent-gold); font-size: 1.25rem;"></i>
+                <div style="margin: 1rem 0; padding: 0.75rem 1.15rem; background: rgba(0,0,0,0.25); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: inline-flex; align-items: center; gap: 0.85rem; width: fit-content;">
+                    <i class="fa-solid fa-video" style="color: var(--accent-primary); font-size: 1.15rem;"></i>
                     <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Regia di</span>
-                        <a th:if="${film.regista != null}" th:href="@{'/regista/' + ${film.regista.id}}" th:text="${film.regista.nomeCompleto}" style="color: var(--accent-gold); font-weight: 600; font-size: 1.05rem;">Nome Regista</a>
-                        <span th:unless="${film.regista != null}" style="color: var(--text-secondary);">Regista non specificato</span>
+                        <span style="font-size: 0.75rem; color: var(--text-dim); display: block;">Regia di</span>
+                        <a th:if="${film.regista != null}" th:href="@{'/regista/' + ${film.regista.id}}" th:text="${film.regista.nomeCompleto}" style="color: var(--accent-primary); font-weight: 600; font-size: 0.95rem;">Nome Regista</a>
+                        <span th:unless="${film.regista != null}" style="color: var(--text-muted);">Regista non specificato</span>
                     </div>
                 </div>
 
                 <!-- Azioni Admin e Utente -->
-                <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <div style="display: flex; gap: 0.65rem; margin-top: 1.25rem; flex-wrap: wrap;">
                     <!-- Se l'utente è registrato e NON ha ancora recensito -->
                     <a th:if="${isLoggedIn and !hasReviewed}" th:href="@{'/recensioni/nuova/' + ${film.id}}" class="btn btn-primary">
                         <i class="fa-solid fa-star"></i> Scrivi una Recensione
@@ -70,21 +71,21 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-bottom: 3.5rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
             
             <!-- Festival a cui partecipa -->
             <div>
-                <h2 class="section-title" style="font-size: 1.35rem; margin-bottom: 1rem;">
-                    <i class="fa-solid fa-trophy" style="color: var(--accent-gold);"></i> Festival in cui è Presentato (<span th:text="${film.festival.size()}">0</span>)
+                <h2 class="section-title" style="font-size: 1.25rem; margin-bottom: 0.85rem;">
+                    <i class="fa-solid fa-trophy" style="color: var(--accent-primary);"></i> Festival in cui è Presentato (<span th:text="${film.festival.size()}">0</span>)
                 </h2>
 
-                <div th:if="${!film.festival.isEmpty()}" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div th:each="fest : ${film.festival}" style="background: var(--bg-card); padding: 1rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div th:if="${!film.festival.isEmpty()}" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    <div th:each="fest : ${film.festival}" style="background: var(--bg-card); padding: 0.85rem 1.15rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h4 style="font-size: 1.05rem; margin-bottom: 0.2rem;">
-                                <a th:href="@{'/festival/' + ${fest.id}}" th:text="${fest.nome}" style="color: var(--text-primary);">Nome Festival</a>
+                            <h4 style="font-size: 0.95rem; margin-bottom: 0.15rem;">
+                                <a th:href="@{'/festival/' + ${fest.id}}" th:text="${fest.nome}" style="color: var(--text-main);">Nome Festival</a>
                             </h4>
-                            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                            <p style="font-size: 0.775rem; color: var(--text-muted);">
                                 <span th:text="${fest.anno}">2026</span> &bull; 
                                 <span th:text="${fest.citta}">Città</span> &bull; 
                                 <span th:text="${fest.dataInizio + ' - ' + fest.dataFine}">Date</span>
@@ -94,44 +95,44 @@
                     </div>
                 </div>
 
-                <div th:if="${film.festival.isEmpty()}" style="padding: 2rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                    <p style="color: var(--text-secondary);">Questo film non è attualmente associato ad alcun festival.</p>
+                <div th:if="${film.festival.isEmpty()}" style="padding: 1.75rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">Questo film non è attualmente associato ad alcun festival.</p>
                 </div>
             </div>
 
             <!-- Proiezioni Programmate per questo film -->
             <div>
-                <h2 class="section-title" style="font-size: 1.35rem; margin-bottom: 1rem;">
-                    <i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> Proiezioni in Programma (<span th:text="${film.proiezioni.size()}">0</span>)
+                <h2 class="section-title" style="font-size: 1.25rem; margin-bottom: 0.85rem;">
+                    <i class="fa-solid fa-calendar-days" style="color: var(--accent-primary);"></i> Proiezioni in Programma (<span th:text="${film.proiezioni.size()}">0</span>)
                 </h2>
 
                 <div th:if="${!film.proiezioni.isEmpty()}">
-                    <div th:each="p : ${film.proiezioni}" class="projection-item" style="padding: 0.85rem 1rem; margin-bottom: 0.75rem;">
-                        <div class="proj-time" style="min-width: 75px; padding: 0.35rem;">
+                    <div th:each="p : ${film.proiezioni}" class="projection-item" style="padding: 0.75rem 0.85rem; margin-bottom: 0.65rem;">
+                        <div class="proj-time" style="min-width: 65px; padding: 0.25rem;">
                             <span class="proj-date" th:text="${p.data}">2026-08-28</span>
-                            <span class="proj-hour" style="font-size: 1.1rem;" th:text="${p.ora}">20:30</span>
+                            <span class="proj-hour" style="font-size: 1rem;" th:text="${p.ora}">20:30</span>
                         </div>
                         <div class="proj-details">
-                            <p style="font-size: 0.85rem; font-weight: 600; color: var(--accent-gold);" th:text="${p.festival.nome}">Festival</p>
-                            <p style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${p.sala.nome + ' (' + p.sala.indirizzo + ')'}">Sala</p>
+                            <p style="font-size: 0.825rem; font-weight: 600; color: var(--text-main);" th:text="${p.festival.nome}">Festival</p>
+                            <p style="font-size: 0.775rem; color: var(--text-muted);" th:text="${p.sala.nome + ' (' + p.sala.indirizzo + ')'}">Sala</p>
                         </div>
                         <a th:href="@{'/proiezione/' + ${p.id}}" class="btn btn-sm btn-secondary">Dettagli</a>
                     </div>
                 </div>
 
-                <div th:if="${film.proiezioni.isEmpty()}" style="padding: 2rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                    <p style="color: var(--text-secondary);">Nessuna proiezione programmata al momento.</p>
+                <div th:if="${film.proiezioni.isEmpty()}" style="padding: 1.75rem; text-align: center; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">Nessuna proiezione programmata al momento.</p>
                 </div>
             </div>
 
         </div>
 
-        <!-- Sezione Recensioni -->
+        <!-- Sezione Recensioni & Statistiche -->
         <section class="section">
             <div class="section-header">
                 <div>
-                    <h2 class="section-title">Recensioni del Pubblico (<span th:text="${recensioni.size()}">0</span>)</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Opinioni e voti inseriti dalla community</p>
+                    <h2 class="section-title">Valutazioni e Recensioni (<span th:text="${recensioni.size()}">0</span>)</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">Statistiche aggregate e opinioni della community</p>
                 </div>
                 <div>
                     <a th:if="${isLoggedIn and !hasReviewed}" th:href="@{'/recensioni/nuova/' + ${film.id}}" class="btn btn-sm btn-primary">
@@ -140,6 +141,35 @@
                 </div>
             </div>
 
+            <!-- Box Statistiche Recensioni -->
+            <div th:if="${!recensioni.isEmpty()}" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 1.75rem; display: grid; grid-template-columns: 180px 1fr; gap: 1.75rem; align-items: center;">
+                <div style="text-align: center; border-right: 1px solid var(--border-subtle); padding-right: 1.25rem;">
+                    <div style="font-size: 2.75rem; font-weight: 800; color: var(--text-main); line-height: 1; letter-spacing: -0.03em;" th:text="${film.getMediaVoti()}">4.5</div>
+                    <div style="color: var(--accent-amber); margin: 0.35rem 0;">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:class="${i <= film.getMediaVoti()} ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+                        </span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${film.getNumeroRecensioni()} + ' valutazioni'">0 valutazioni</div>
+                    <div th:if="${film.getTassoGradimento() > 0}" style="margin-top: 0.4rem;">
+                        <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); font-size: 0.725rem;" th:text="${film.getTassoGradimento()} + '% gradimento'">100% gradimento</span>
+                    </div>
+                </div>
+
+                <!-- Barre percentuali per stella -->
+                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <div th:each="entry : ${film.getPercentualiVoti()}" style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.8rem;">
+                        <span style="min-width: 45px; color: var(--text-muted);" th:text="${entry.key} + ' stelle'">5 stelle</span>
+                        <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
+                            <div th:style="'width: ' + ${entry.value} + '%; height: 100%; background: var(--accent-primary); border-radius: 3px;'"></div>
+                        </div>
+                        <span style="min-width: 35px; text-align: right; color: var(--text-dim);" th:text="${entry.value} + '%'">0%</span>
+                        <span style="min-width: 25px; text-align: right; color: var(--text-muted);" th:text="'(' + ${film.getDistribuzioneVoti().get(entry.key)} + ')'">(0)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista Recensioni -->
             <div th:if="${!recensioni.isEmpty()}">
                 <div th:each="rec : ${recensioni}" class="review-item">
                     <div class="review-header">
@@ -151,7 +181,7 @@
                                 <strong th:text="${rec.autore.nomeCompleto}" style="color: var(--text-primary); font-size: 1rem;">Nome Utente</strong>
                                 <div class="review-stars">
                                     <span th:each="i : ${#numbers.sequence(1, 5)}">
-                                        <i th:class="${i <= rec.voto} ? 'fa-solid fa-star' : 'fa-regular fa-star'" style="color: var(--accent-gold); font-size: 0.85rem;"></i>
+                                        <i th:class="${i <= rec.voto} ? 'fa-solid fa-star' : 'fa-regular fa-star'" style="color: var(--accent-amber); font-size: 0.85rem;"></i>
                                     </span>
                                     <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.4rem;" th:text="${rec.voto} + '/5'">5/5</span>
                                 </div>

@@ -4,6 +4,9 @@ import it.uniroma3.siw.model.Festival;
 import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.repository.FestivalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -25,6 +28,18 @@ public class FestivalService {
     @Transactional(readOnly = true)
     public List<Festival> getAllFestivals() {
         return festivalRepository.findByOrderByAnnoDescDataInizioDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Festival> getFestivalsPaginated(String citta, String nome, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (citta != null && !citta.trim().isEmpty()) {
+            return festivalRepository.findByCittaContainingIgnoreCase(citta.trim(), pageable);
+        } else if (nome != null && !nome.trim().isEmpty()) {
+            return festivalRepository.findByNomeContainingIgnoreCase(nome.trim(), pageable);
+        } else {
+            return festivalRepository.findByOrderByAnnoDescDataInizioDesc(pageable);
+        }
     }
 
     @Transactional(readOnly = true)

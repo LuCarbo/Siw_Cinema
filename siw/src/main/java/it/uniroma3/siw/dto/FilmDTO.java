@@ -66,4 +66,7 @@ public class FilmDTO {
 
     public String getRegistaNome() { return registaNome; }
     public void setRegistaNome(String registaNome) { this.registaNome = registaNome; }
+
+    public String getNomeRegista() { return registaNome; }
+    public void setNomeRegista(String nomeRegista) { this.registaNome = nomeRegista; }
 }

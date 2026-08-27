@@ -14,7 +14,7 @@
                 <p class="form-subtitle">Compila la scheda informativa del film</p>
             </div>
 
-            <form th:action="@{/films/salva}" th:object="${film}" method="post">
+            <form th:action="@{/films/salva}" th:object="${film}" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{id}">
 
                 <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
@@ -68,10 +68,17 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="locandina">URL Locandina / Poster (opzionale)</label>
-                    <input type="url" id="locandina" th:field="*{locandina}" class="form-control" placeholder="https://esempio.it/locandina.jpg">
-                    <span th:if="${#fields.hasErrors('locandina')}" th:errors="*{locandina}" class="form-error"></span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="immagineFile">Carica file immagine dal computer</label>
+                        <input type="file" id="immagineFile" name="immagineFile" class="form-control" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="locandina">oppure URL Locandina web</label>
+                        <input type="url" id="locandina" th:field="*{locandina}" class="form-control" placeholder="https://esempio.it/locandina.jpg">
+                        <span th:if="${#fields.hasErrors('locandina')}" th:errors="*{locandina}" class="form-error"></span>
+                    </div>
                 </div>
 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">

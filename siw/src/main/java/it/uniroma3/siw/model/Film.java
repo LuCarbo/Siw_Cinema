@@ -31,6 +31,7 @@ public class Film {
     @NotBlank(message = "{film.paeseProduzione.notblank}")
     private String paeseProduzione;
 
+    @Column(columnDefinition = "TEXT")
     private String locandina;
 
     @ManyToOne
@@ -158,6 +159,48 @@ public class Film {
 
     public int getNumeroRecensioni() {
         return recensioni != null ? recensioni.size() : 0;
+    }
+
+    /**
+     * Calcola il conteggio delle recensioni per ogni voto da 5 a 1.
+     */
+    public Map<Integer, Integer> getDistribuzioneVoti() {
+        Map<Integer, Integer> dist = new LinkedHashMap<>();
+        for (int i = 5; i >= 1; i--) {
+            dist.put(i, 0);
+        }
+        if (recensioni != null) {
+            for (Recensione r : recensioni) {
+                if (r.getVoto() != null && r.getVoto() >= 1 && r.getVoto() <= 5) {
+                    dist.put(r.getVoto(), dist.get(r.getVoto()) + 1);
+                }
+            }
+        }
+        return dist;
+    }
+
+    /**
+     * Calcola la percentuale di recensioni per ogni voto da 5 a 1.
+     */
+    public Map<Integer, Integer> getPercentualiVoti() {
+        Map<Integer, Integer> perc = new LinkedHashMap<>();
+        int total = getNumeroRecensioni();
+        Map<Integer, Integer> dist = getDistribuzioneVoti();
+        for (int i = 5; i >= 1; i--) {
+            int count = dist.get(i);
+            perc.put(i, total > 0 ? (int) Math.round(((double) count / total) * 100) : 0);
+        }
+        return perc;
+    }
+
+    /**
+     * Calcola il tasso di gradimento (percentuale di voti >= 4).
+     */
+    public int getTassoGradimento() {
+        int total = getNumeroRecensioni();
+        if (total == 0) return 0;
+        long positivi = recensioni.stream().filter(r -> r.getVoto() != null && r.getVoto() >= 4).count();
+        return (int) Math.round(((double) positivi / total) * 100);
     }
 
     @Override

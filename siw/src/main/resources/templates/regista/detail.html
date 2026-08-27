@@ -10,19 +10,20 @@
         
         <div class="detail-banner" style="align-items: center; gap: 2.5rem;">
             <img th:src="${regista.foto != null ? regista.foto : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500'}" 
-                 alt="Foto Regista" style="width: 180px; height: 180px; border-radius: var(--radius-full); object-fit: cover; border: 3px solid var(--accent-gold); box-shadow: var(--shadow-lg);">
+                 referrerpolicy="no-referrer"
+                 alt="Foto Regista" style="width: 170px; height: 170px; border-radius: var(--radius-full); object-fit: cover; border: 3px solid var(--accent-primary); box-shadow: var(--shadow-lg);">
             
             <div class="detail-info">
                 <span class="badge badge-admin" style="width: fit-content; margin-bottom: 0.5rem;">Regista</span>
                 <h1 class="detail-title" th:text="${regista.nomeCompleto}">Nome Cognome</h1>
                 <div class="detail-badges">
-                    <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--accent-gold);">
+                    <span class="badge" style="background: var(--accent-primary-light); color: #c7d2fe; border: 1px solid var(--accent-primary-border);">
                         <i class="fa-solid fa-earth-americas"></i> <span th:text="${regista.nazionalita}" style="margin-left: 0.3rem;">Nazionalità</span>
                     </span>
-                    <span class="badge" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
+                    <span class="badge" style="background: rgba(56,189,248,0.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.25);">
                         <i class="fa-solid fa-cake-candles"></i> <span th:text="'Nato il ' + ${#temporals.format(regista.dataNascita, 'dd/MM/yyyy')}" style="margin-left: 0.3rem;">Data</span>
                     </span>
-                    <span class="badge" style="background: rgba(16,185,129,0.15); color: #6ee7b7;">
+                    <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25);">
                         <i class="fa-solid fa-clapperboard"></i> <span th:text="${regista.film.size() + ' Film in Catalogo'}" style="margin-left: 0.3rem;">0 Film</span>
                     </span>
                 </div>

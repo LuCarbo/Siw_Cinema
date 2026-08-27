@@ -27,35 +27,35 @@
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 1.35rem;">
-                    <i class="fa-solid fa-trophy" style="color: var(--accent-gold);"></i> Gestione Festival (<span th:text="${festivals.size()}"></span>)
+                    <i class="fa-solid fa-trophy" style="color: var(--accent-primary);"></i> Gestione Festival (<span th:text="${festivals.size()}"></span>)
                 </h2>
                 <a th:href="@{/festivals/nuovo}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Aggiungi Festival</a>
             </div>
 
-            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto;">
+            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                     <thead>
-                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
-                            <th style="padding: 1rem 1.25rem;">Nome Festival</th>
-                            <th style="padding: 1rem 1.25rem;">Anno</th>
-                            <th style="padding: 1rem 1.25rem;">Città</th>
-                            <th style="padding: 1rem 1.25rem;">Periodo</th>
-                            <th style="padding: 1rem 1.25rem;">Film Associati</th>
-                            <th style="padding: 1rem 1.25rem; text-align: right;">Azioni</th>
+                        <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
+                            <th style="padding: 0.85rem 1.15rem;">Nome Festival</th>
+                            <th style="padding: 0.85rem 1.15rem;">Anno</th>
+                            <th style="padding: 0.85rem 1.15rem;">Città</th>
+                            <th style="padding: 0.85rem 1.15rem;">Periodo</th>
+                            <th style="padding: 0.85rem 1.15rem;">Film Associati</th>
+                            <th style="padding: 0.85rem 1.15rem; text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="fest : ${festivals}" style="border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 1rem 1.25rem; font-weight: 600;">
-                                <a th:href="@{'/festival/' + ${fest.id}}" th:text="${fest.nome}" style="color: var(--text-primary);">Nome</a>
+                        <tr th:each="fest : ${festivals}" style="border-bottom: 1px solid var(--border-subtle);">
+                            <td style="padding: 0.85rem 1.15rem; font-weight: 600;">
+                                <a th:href="@{'/festival/' + ${fest.id}}" th:text="${fest.nome}" style="color: var(--text-main);">Nome</a>
                             </td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${fest.anno}">2026</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${fest.citta}">Città</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${fest.dataInizio + ' / ' + fest.dataFine}">Date</td>
-                            <td style="padding: 1rem 1.25rem;">
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${fest.anno}">2026</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${fest.citta}">Città</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${fest.dataInizio + ' / ' + fest.dataFine}">Date</td>
+                            <td style="padding: 0.85rem 1.15rem;">
                                 <span class="badge badge-user" th:text="${fest.film.size() + ' Film'}">0 Film</span>
                             </td>
-                            <td style="padding: 1rem 1.25rem; text-align: right;">
+                            <td style="padding: 0.85rem 1.15rem; text-align: right;">
                                 <div style="display: inline-flex; gap: 0.35rem;">
                                     <a th:href="@{'/festivals/' + ${fest.id} + '/gestione-film'}" class="btn btn-sm btn-outline" title="Gestione Film Partecipanti">
                                         <i class="fa-solid fa-film"></i> Gestisci Film
@@ -75,37 +75,37 @@
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 1.35rem;">
-                    <i class="fa-solid fa-clapperboard" style="color: var(--accent-gold);"></i> Gestione Catalogo Film (<span th:text="${films.size()}"></span>)
+                    <i class="fa-solid fa-clapperboard" style="color: var(--accent-primary);"></i> Gestione Catalogo Film (<span th:text="${films.size()}"></span>)
                 </h2>
                 <a th:href="@{/films/nuovo}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Aggiungi Film</a>
             </div>
 
-            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto;">
+            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                     <thead>
-                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
-                            <th style="padding: 1rem 1.25rem;">Titolo Film</th>
-                            <th style="padding: 1rem 1.25rem;">Anno</th>
-                            <th style="padding: 1rem 1.25rem;">Genere</th>
-                            <th style="padding: 1rem 1.25rem;">Regista</th>
-                            <th style="padding: 1rem 1.25rem;">Media Voti</th>
-                            <th style="padding: 1rem 1.25rem; text-align: right;">Azioni</th>
+                        <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
+                            <th style="padding: 0.85rem 1.15rem;">Titolo Film</th>
+                            <th style="padding: 0.85rem 1.15rem;">Anno</th>
+                            <th style="padding: 0.85rem 1.15rem;">Genere</th>
+                            <th style="padding: 0.85rem 1.15rem;">Regista</th>
+                            <th style="padding: 0.85rem 1.15rem;">Media Voti</th>
+                            <th style="padding: 0.85rem 1.15rem; text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="film : ${films}" style="border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 1rem 1.25rem; font-weight: 600;">
-                                <a th:href="@{'/film/' + ${film.id}}" th:text="${film.titolo}" style="color: var(--text-primary);">Titolo</a>
+                        <tr th:each="film : ${films}" style="border-bottom: 1px solid var(--border-subtle);">
+                            <td style="padding: 0.85rem 1.15rem; font-weight: 600;">
+                                <a th:href="@{'/film/' + ${film.id}}" th:text="${film.titolo}" style="color: var(--text-main);">Titolo</a>
                             </td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${film.anno}">2024</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${film.genere}">Genere</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${film.regista != null ? film.regista.nomeCompleto : 'Nessuno'}">Regista</td>
-                            <td style="padding: 1rem 1.25rem;">
-                                <span style="color: var(--accent-gold); font-weight: 600;">
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${film.anno}">2024</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${film.genere}">Genere</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${film.regista != null ? film.regista.nomeCompleto : 'Nessuno'}">Regista</td>
+                            <td style="padding: 0.85rem 1.15rem;">
+                                <span style="color: var(--accent-amber); font-weight: 600;">
                                     <i class="fa-solid fa-star"></i> <span th:text="${film.getMediaVoti() > 0 ? film.getMediaVoti() : '-'}">-</span>
                                 </span>
                             </td>
-                            <td style="padding: 1rem 1.25rem; text-align: right;">
+                            <td style="padding: 0.85rem 1.15rem; text-align: right;">
                                 <div style="display: inline-flex; gap: 0.35rem;">
                                     <a th:href="@{'/films/modifica/' + ${film.id}}" class="btn btn-sm btn-secondary" title="Modifica">
                                         <i class="fa-solid fa-pen"></i> Modifica
@@ -122,35 +122,35 @@
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 1.35rem;">
-                    <i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> Gestione Proiezioni Programmate (<span th:text="${proiezioni.size()}"></span>)
+                    <i class="fa-solid fa-calendar-days" style="color: var(--accent-primary);"></i> Gestione Proiezioni Programmate (<span th:text="${proiezioni.size()}"></span>)
                 </h2>
                 <a th:href="@{/proiezioni/nuova}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Nuova Proiezione</a>
             </div>
 
-            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto;">
+            <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                     <thead>
-                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
-                            <th style="padding: 1rem 1.25rem;">Data e Ora</th>
-                            <th style="padding: 1rem 1.25rem;">Film</th>
-                            <th style="padding: 1rem 1.25rem;">Festival</th>
-                            <th style="padding: 1rem 1.25rem;">Sala</th>
-                            <th style="padding: 1rem 1.25rem;">Stato</th>
-                            <th style="padding: 1rem 1.25rem; text-align: right;">Azioni</th>
+                        <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); background: rgba(0,0,0,0.2);">
+                            <th style="padding: 0.85rem 1.15rem;">Data e Ora</th>
+                            <th style="padding: 0.85rem 1.15rem;">Film</th>
+                            <th style="padding: 0.85rem 1.15rem;">Festival</th>
+                            <th style="padding: 0.85rem 1.15rem;">Sala</th>
+                            <th style="padding: 0.85rem 1.15rem;">Stato</th>
+                            <th style="padding: 0.85rem 1.15rem; text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="p : ${proiezioni}" style="border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 1rem 1.25rem; font-weight: 600; color: var(--accent-gold);" th:text="${p.data + ' ore ' + p.ora}">Data Ora</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${p.film.titolo}">Film</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${p.festival.nome}">Festival</td>
-                            <td style="padding: 1rem 1.25rem;" th:text="${p.sala.nome}">Sala</td>
-                            <td style="padding: 1rem 1.25rem;">
+                        <tr th:each="p : ${proiezioni}" style="border-bottom: 1px solid var(--border-subtle);">
+                            <td style="padding: 0.85rem 1.15rem; font-weight: 600; color: #c7d2fe;" th:text="${p.data + ' ore ' + p.ora}">Data Ora</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${p.film.titolo}">Film</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${p.festival.nome}">Festival</td>
+                            <td style="padding: 0.85rem 1.15rem;" th:text="${p.sala.nome}">Sala</td>
+                            <td style="padding: 0.85rem 1.15rem;">
                                 <span class="badge badge-scheduled" th:if="${p.stato.name() == 'SCHEDULED'}" th:text="${p.stato.label}">Programmata</span>
                                 <span class="badge badge-completed" th:if="${p.stato.name() == 'COMPLETED'}" th:text="${p.stato.label}">Completata</span>
                                 <span class="badge badge-cancelled" th:if="${p.stato.name() == 'CANCELLED'}" th:text="${p.stato.label}">Annullata</span>
                             </td>
-                            <td style="padding: 1rem 1.25rem; text-align: right;">
+                            <td style="padding: 0.85rem 1.15rem; text-align: right;">
                                 <div style="display: inline-flex; gap: 0.35rem;">
                                     <a th:href="@{'/proiezioni/modifica/' + ${p.id}}" class="btn btn-sm btn-secondary" title="Modifica">
                                         <i class="fa-solid fa-pen"></i>
@@ -174,15 +174,15 @@
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title" style="font-size: 1.2rem;">
-                        <i class="fa-solid fa-video" style="color: var(--accent-gold);"></i> Registi (<span th:text="${registi.size()}"></span>)
+                        <i class="fa-solid fa-video" style="color: var(--accent-primary);"></i> Registi (<span th:text="${registi.size()}"></span>)
                     </h2>
                     <a th:href="@{/registi/nuovo}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-plus"></i> Nuovo</a>
                 </div>
-                <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); padding: 1rem;">
-                    <div th:each="r : ${registi}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1rem;">
+                    <div th:each="r : ${registi}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-subtle);">
                         <div>
                             <strong th:text="${r.nomeCompleto}">Nome Cognome</strong>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${r.nazionalita + ' &bull; ' + r.film.size() + ' Film'}">Info</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${r.nazionalita + ' &bull; ' + r.film.size() + ' Film'}">Info</div>
                         </div>
                         <div style="display: flex; gap: 0.35rem;">
                             <a th:href="@{'/registi/modifica/' + ${r.id}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pen"></i> Modifica</a>
@@ -195,15 +195,15 @@
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title" style="font-size: 1.2rem;">
-                        <i class="fa-solid fa-couch" style="color: var(--accent-gold);"></i> Sale Cinematografiche (<span th:text="${sale.size()}"></span>)
+                        <i class="fa-solid fa-couch" style="color: var(--accent-primary);"></i> Sale Cinematografiche (<span th:text="${sale.size()}"></span>)
                     </h2>
                     <a th:href="@{/sale/nuova}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-plus"></i> Nuova</a>
                 </div>
-                <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); padding: 1rem;">
-                    <div th:each="s : ${sale}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1rem;">
+                    <div th:each="s : ${sale}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-subtle);">
                         <div>
                             <strong th:text="${s.nome}">Nome Sala</strong>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${s.indirizzo + ' &bull; Capienza: ' + s.capienza + ' posti'}">Info</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${s.indirizzo + ' &bull; Capienza: ' + s.capienza + ' posti'}">Info</div>
                         </div>
                         <div style="display: flex; gap: 0.35rem;">
                             <a th:href="@{'/sale/modifica/' + ${s.id}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pen"></i> Modifica</a>

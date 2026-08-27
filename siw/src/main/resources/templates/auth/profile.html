@@ -10,7 +10,7 @@
         
         <!-- Profile Header -->
         <div class="detail-banner" style="align-items: center; gap: 2rem;">
-            <div style="width: 100px; height: 100px; border-radius: var(--radius-full); background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-gold); border: 2px solid var(--accent-gold);">
+            <div style="width: 90px; height: 90px; border-radius: var(--radius-full); background: var(--accent-primary-light); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--accent-primary); border: 2px solid var(--accent-primary-border);">
                 <i class="fa-solid fa-user"></i>
             </div>
             <div class="detail-info">
@@ -18,8 +18,8 @@
                 <div class="detail-badges">
                     <span class="badge badge-admin" th:if="${credentials.admin}">Ruolo: AMMINISTRATORE</span>
                     <span class="badge badge-user" th:unless="${credentials.admin}">Ruolo: UTENTE REGISTRATO</span>
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-secondary);" th:text="'Username: ' + ${credentials.username}">Username</span>
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-secondary);" th:text="'Email: ' + ${user.email}">Email</span>
+                    <span class="badge" style="background: rgba(255,255,255,0.08); color: var(--text-muted);" th:text="'Username: ' + ${credentials.username}">Username</span>
+                    <span class="badge" style="background: rgba(255,255,255,0.08); color: var(--text-muted);" th:text="'Email: ' + ${user.email}">Email</span>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="section-header">
                 <div>
                     <h2 class="section-title">Le Mie Recensioni (<span th:text="${recensioni.size()}">0</span>)</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Tutte le recensioni che hai pubblicato sui film</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">Tutte le recensioni che hai pubblicato sui film</p>
                 </div>
             </div>
 
@@ -37,14 +37,14 @@
                 <div th:each="rec : ${recensioni}" class="review-item">
                     <div class="review-header">
                         <div>
-                            <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">
-                                Film: <a th:href="@{'/film/' + ${rec.film.id}}" th:text="${rec.film.titolo}" style="color: var(--accent-gold);">Titolo Film</a>
+                            <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">
+                                Film: <a th:href="@{'/film/' + ${rec.film.id}}" th:text="${rec.film.titolo}" style="color: var(--text-main);">Titolo Film</a>
                             </h3>
                             <div class="review-stars">
                                 <span th:each="i : ${#numbers.sequence(1, 5)}">
-                                    <i th:class="${i <= rec.voto} ? 'fa-solid fa-star' : 'fa-regular fa-star'" style="color: var(--accent-gold); font-size: 0.9rem;"></i>
+                                    <i th:class="${i <= rec.voto} ? 'fa-solid fa-star' : 'fa-regular fa-star'" style="color: var(--accent-amber); font-size: 0.85rem;"></i>
                                 </span>
-                                <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.5rem;" th:text="${rec.voto} + '/5'">5/5</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;" th:text="${rec.voto} + '/5'">5/5</span>
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -65,10 +65,10 @@
                 </div>
             </div>
 
-            <div th:if="${recensioni.isEmpty()}" style="text-align: center; padding: 3rem 0; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                <i class="fa-regular fa-comment-dots" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+            <div th:if="${recensioni.isEmpty()}" style="text-align: center; padding: 2.5rem 0; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <i class="fa-regular fa-comment-dots" style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 0.75rem;"></i>
                 <h3>Non hai ancora scritto recensioni</h3>
-                <p style="color: var(--text-secondary); margin-top: 0.25rem;">Esplora i film del catalogo e scrivi la tua prima recensione!</p>
+                <p style="color: var(--text-muted); margin-top: 0.25rem; font-size: 0.875rem;">Esplora i film del catalogo e scrivi la tua prima recensione!</p>
                 <a th:href="@{/films}" class="btn btn-primary btn-sm" style="margin-top: 1rem;">Esplora i Film</a>
             </div>
         </section>

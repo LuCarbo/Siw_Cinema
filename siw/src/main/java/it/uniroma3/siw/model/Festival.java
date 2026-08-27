@@ -37,6 +37,7 @@ public class Festival {
     @Column(length = 3000)
     private String descrizione;
 
+    @Column(columnDefinition = "TEXT")
     private String immagine;
 
     @ManyToMany

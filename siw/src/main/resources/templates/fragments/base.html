@@ -3,7 +3,10 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title th:text="${title} ? ${title} + ' | SIW Cinema' : 'SIW Cinema - Gestione Festival Cinematografici'">SIW Cinema</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -22,7 +25,6 @@
                 <li><a th:href="@{/festivals}" class="nav-link"><i class="fa-solid fa-trophy"></i> Festival</a></li>
                 <li><a th:href="@{/films}" class="nav-link"><i class="fa-solid fa-clapperboard"></i> Film</a></li>
                 <li><a th:href="@{/proiezioni}" class="nav-link"><i class="fa-solid fa-calendar-days"></i> Proiezioni</a></li>
-                <li><a th:href="@{/explorer}" class="nav-link"><i class="fa-brands fa-react" style="color: #61dafb;"></i> Live Explorer</a></li>
             </ul>
 
             <div class="nav-actions">

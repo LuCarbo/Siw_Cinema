@@ -18,17 +18,25 @@ public interface ProiezioneRepository extends CrudRepository<Proiezione, Long> {
 
     List<Proiezione> findAll();
 
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala ORDER BY p.data ASC, p.ora ASC")
     List<Proiezione> findByOrderByDataAscOraAsc();
 
-    List<Proiezione> findByFestivalOrderByDataAscOraAsc(Festival festival);
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.festival = :festival ORDER BY p.data ASC, p.ora ASC")
+    List<Proiezione> findByFestivalOrderByDataAscOraAsc(@Param("festival") Festival festival);
 
-    List<Proiezione> findByFilmOrderByDataAscOraAsc(Film film);
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.film = :film ORDER BY p.data ASC, p.ora ASC")
+    List<Proiezione> findByFilmOrderByDataAscOraAsc(@Param("film") Film film);
 
-    List<Proiezione> findBySalaOrderByDataAscOraAsc(Sala sala);
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.sala = :sala ORDER BY p.data ASC, p.ora ASC")
+    List<Proiezione> findBySalaOrderByDataAscOraAsc(@Param("sala") Sala sala);
 
     List<Proiezione> findByStatoOrderByDataAscOraAsc(StatoProiezione stato);
 
-    List<Proiezione> findByDataGreaterThanEqualOrderByDataAscOraAsc(LocalDate data);
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.data = :data ORDER BY p.ora ASC")
+    List<Proiezione> findByDataOrderByOraAsc(@Param("data") LocalDate data);
+
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.data >= :data ORDER BY p.data ASC, p.ora ASC")
+    List<Proiezione> findByDataGreaterThanEqualOrderByDataAscOraAsc(@Param("data") LocalDate data);
 
     @Query("SELECT p FROM Proiezione p WHERE p.sala = :sala AND p.data = :data AND p.ora = :ora AND (:id IS NULL OR p.id <> :id)")
     List<Proiezione> findConflictingProjections(@Param("sala") Sala sala,

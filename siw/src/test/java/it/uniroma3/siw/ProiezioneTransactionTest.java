@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,6 +59,14 @@ class ProiezioneTransactionTest {
         // Verifica che l'associazione Film-Festival sia stata aggiornata coerentemente
         Festival updatedFestival = festivalService.getFestival(savedFestival.getId());
         assertTrue(updatedFestival.getFilm().contains(savedFilm));
+
+        // Test ricerca per data
+        List<Proiezione> proiezioniPerData = proiezioneService.searchProiezioni(null, null, null, LocalDate.of(2026, 9, 5));
+        assertFalse(proiezioniPerData.isEmpty());
+        assertTrue(proiezioniPerData.contains(saved));
+
+        List<Proiezione> proiezioniAltraData = proiezioneService.searchProiezioni(null, null, null, LocalDate.of(2026, 9, 6));
+        assertFalse(proiezioniAltraData.contains(saved));
     }
 
     @Test

@@ -50,9 +50,4 @@ public class HomeController {
 
         return "index";
     }
-
-    @GetMapping("/explorer")
-    public String explorer() {
-        return "react-explorer";
-    }
 }

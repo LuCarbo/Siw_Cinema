@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/recensioni/**", "/profilo/**").hasAnyAuthority("ADMIN", "USER", "DEFAULT")
 
                 // 6. Pagine pubbliche e di consultazione (GET)
-                .requestMatchers(HttpMethod.GET, "/", "/index", "/explorer").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/index").permitAll()
                 .requestMatchers(HttpMethod.GET, "/festivals", "/festival/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/films", "/film/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/regista/**").permitAll()

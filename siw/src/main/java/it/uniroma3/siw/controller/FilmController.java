@@ -14,7 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Base64;
 import java.util.Optional;
 
 @Controller
@@ -36,25 +37,8 @@ public class FilmController {
     private FilmValidator filmValidator;
 
     @GetMapping("/films")
-    public String listFilms(@RequestParam(value = "titolo", required = false) String titolo,
-                            @RequestParam(value = "genere", required = false) String genere,
-                            @RequestParam(value = "anno", required = false) Integer anno,
-                            Model model) {
-        List<Film> films;
-        if (titolo != null && !titolo.trim().isEmpty()) {
-            films = filmService.searchByTitolo(titolo);
-        } else if (genere != null && !genere.trim().isEmpty()) {
-            films = filmService.filterByGenere(genere);
-        } else if (anno != null) {
-            films = filmService.filterByAnno(anno);
-        } else {
-            films = filmService.getAllFilms();
-        }
-
-        model.addAttribute("films", films);
-        model.addAttribute("titolo", titolo);
-        model.addAttribute("genere", genere);
-        model.addAttribute("anno", anno);
+    public String listFilms(Model model) {
+        model.addAttribute("registi", registaService.getAllRegisti());
         return "film/list";
     }
 
@@ -92,12 +76,23 @@ public class FilmController {
     public String saveFilm(@Valid @ModelAttribute("film") Film film,
                            BindingResult bindingResult,
                            @RequestParam(value = "registaId", required = false) Long registaId,
+                           @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
                            Model model) {
         filmValidator.validate(film, bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("registi", registaService.getAllRegisti());
             return "film/form";
+        }
+
+        if (immagineFile != null && !immagineFile.isEmpty()) {
+            try {
+                String mimeType = (immagineFile.getContentType() != null && !immagineFile.getContentType().isEmpty()) 
+                        ? immagineFile.getContentType() : "image/jpeg";
+                String base64 = Base64.getEncoder().encodeToString(immagineFile.getBytes());
+                film.setLocandina("data:" + mimeType + ";base64," + base64);
+            } catch (Exception ignored) {
+            }
         }
 
         filmService.saveFilmWithRegista(film, registaId);

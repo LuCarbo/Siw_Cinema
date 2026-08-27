@@ -5,10 +5,12 @@ import it.uniroma3.siw.service.*;
 import it.uniroma3.siw.validator.ProiezioneValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -33,20 +35,9 @@ public class ProiezioneController {
     public String listProiezioni(@RequestParam(value = "festivalId", required = false) Long festivalId,
                                  @RequestParam(value = "filmId", required = false) Long filmId,
                                  @RequestParam(value = "salaId", required = false) Long salaId,
+                                 @RequestParam(value = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
                                  Model model) {
-        List<Proiezione> proiezioni;
-        if (festivalId != null) {
-            Festival festival = festivalService.getFestival(festivalId);
-            proiezioni = (festival != null) ? proiezioneService.getProiezioniByFestival(festival) : List.of();
-        } else if (filmId != null) {
-            Film film = filmService.getFilm(filmId);
-            proiezioni = (film != null) ? proiezioneService.getProiezioniByFilm(film) : List.of();
-        } else if (salaId != null) {
-            Sala sala = salaService.getSala(salaId);
-            proiezioni = (sala != null) ? proiezioneService.getProiezioniBySala(sala) : List.of();
-        } else {
-            proiezioni = proiezioneService.getAllProiezioni();
-        }
+        List<Proiezione> proiezioni = proiezioneService.searchProiezioni(festivalId, filmId, salaId, data);
 
         model.addAttribute("proiezioni", proiezioni);
         model.addAttribute("festivals", festivalService.getAllFestivals());
@@ -55,6 +46,7 @@ public class ProiezioneController {
         model.addAttribute("selectedFestivalId", festivalId);
         model.addAttribute("selectedFilmId", filmId);
         model.addAttribute("selectedSalaId", salaId);
+        model.addAttribute("selectedData", data);
         return "proiezione/list";
     }
 

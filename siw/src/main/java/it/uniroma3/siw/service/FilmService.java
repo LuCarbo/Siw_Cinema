@@ -5,6 +5,9 @@ import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.model.Regista;
 import it.uniroma3.siw.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -29,6 +32,23 @@ public class FilmService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Film> getFilmsPaginated(String titolo, String genere, Integer anno, Long registaId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (titolo != null && !titolo.trim().isEmpty()) {
+            return filmRepository.findByTitoloContainingIgnoreCase(titolo.trim(), pageable);
+        } else if (genere != null && !genere.trim().isEmpty()) {
+            return filmRepository.findByGenereIgnoreCase(genere.trim(), pageable);
+        } else if (anno != null) {
+            return filmRepository.findByAnno(anno, pageable);
+        } else if (registaId != null) {
+            Regista regista = registaService.getRegista(registaId);
+            return (regista != null) ? filmRepository.findByRegista(regista, pageable) : Page.empty();
+        } else {
+            return filmRepository.findAll(pageable);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public List<Film> searchByTitolo(String titolo) {
         if (titolo == null || titolo.trim().isEmpty()) {
             return getAllFilms();
@@ -50,6 +70,14 @@ public class FilmService {
             return getAllFilms();
         }
         return filmRepository.findByAnno(anno);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Film> filterByRegista(Regista regista) {
+        if (regista == null) {
+            return getAllFilms();
+        }
+        return filmRepository.findByRegista(regista);
     }
 
     @Transactional(readOnly = true)

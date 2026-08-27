@@ -3,8 +3,10 @@ package it.uniroma3.siw.controller.rest;
 import it.uniroma3.siw.dto.FilmDTO;
 import it.uniroma3.siw.dto.RecensioneDTO;
 import it.uniroma3.siw.model.Film;
+import it.uniroma3.siw.model.Regista;
 import it.uniroma3.siw.service.FilmService;
 import it.uniroma3.siw.service.RecensioneService;
+import it.uniroma3.siw.service.RegistaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +21,16 @@ public class FilmRestController {
     private FilmService filmService;
 
     @Autowired
+    private RegistaService registaService;
+
+    @Autowired
     private RecensioneService recensioneService;
 
     @GetMapping
     public List<FilmDTO> getAllFilms(@RequestParam(value = "titolo", required = false) String titolo,
                                      @RequestParam(value = "genere", required = false) String genere,
-                                     @RequestParam(value = "anno", required = false) Integer anno) {
+                                     @RequestParam(value = "anno", required = false) Integer anno,
+                                     @RequestParam(value = "registaId", required = false) Long registaId) {
         List<Film> films;
         if (titolo != null && !titolo.trim().isEmpty()) {
             films = filmService.searchByTitolo(titolo);
@@ -32,6 +38,9 @@ public class FilmRestController {
             films = filmService.filterByGenere(genere);
         } else if (anno != null) {
             films = filmService.filterByAnno(anno);
+        } else if (registaId != null) {
+            Regista r = registaService.getRegista(registaId);
+            films = (r != null) ? filmService.filterByRegista(r) : List.of();
         } else {
             films = filmService.getAllFilms();
         }

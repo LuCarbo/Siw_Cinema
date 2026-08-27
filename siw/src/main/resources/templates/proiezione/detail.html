@@ -22,17 +22,17 @@
                 </div>
 
                 <h1 class="detail-title">
-                    Proiezione di <a th:href="@{'/film/' + ${proiezione.film.id}}" th:text="${proiezione.film.titolo}" style="color: var(--accent-gold);">Titolo Film</a>
+                    Proiezione di <a th:href="@{'/film/' + ${proiezione.film.id}}" th:text="${proiezione.film.titolo}" style="color: var(--accent-primary);">Titolo Film</a>
                 </h1>
 
                 <div class="detail-badges">
-                    <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--accent-gold);">
+                    <span class="badge" style="background: var(--accent-primary-light); color: #c7d2fe; border: 1px solid var(--accent-primary-border);">
                         <i class="fa-solid fa-trophy"></i> Festival: <a th:href="@{'/festival/' + ${proiezione.festival.id}}" th:text="${proiezione.festival.nome}" style="margin-left: 0.3rem; color: #fff;">Festival</a>
                     </span>
-                    <span class="badge" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
+                    <span class="badge" style="background: rgba(56,189,248,0.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.25);">
                         <i class="fa-solid fa-couch"></i> Sala: <a th:href="@{'/sala/' + ${proiezione.sala.id}}" th:text="${proiezione.sala.nome + ' (' + proiezione.sala.capienza + ' posti)'}" style="margin-left: 0.3rem; color: #fff;">Sala</a>
                     </span>
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-secondary);">
+                    <span class="badge" style="background: rgba(255,255,255,0.08); color: var(--text-muted);">
                         <i class="fa-solid fa-clock"></i> Durata film: <span th:text="${proiezione.film.durata} + ' min'" style="margin-left: 0.3rem;">120 min</span>
                     </span>
                 </div>
@@ -40,7 +40,7 @@
                 <!-- Azioni Admin per cambio stato rapido -->
                 <div th:if="${isAdmin}" style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <form th:action="@{'/proiezioni/' + ${proiezione.id} + '/stato'}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
-                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Cambia stato:</span>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Cambia stato:</span>
                         <select name="stato" class="form-control" style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.85rem;">
                             <option value="SCHEDULED" th:selected="${proiezione.stato.name() == 'SCHEDULED'}">Programmata</option>
                             <option value="COMPLETED" th:selected="${proiezione.stato.name() == 'COMPLETED'}">Completata</option>
@@ -65,7 +65,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             
             <div class="stat-card" style="text-align: left;">
-                <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--accent-gold);">
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--accent-primary);">
                     <i class="fa-solid fa-clapperboard"></i> Informazioni sul Film
                 </h3>
                 <p><strong>Titolo:</strong> <span th:text="${proiezione.film.titolo}">Titolo</span></p>
@@ -78,7 +78,7 @@
             </div>
 
             <div class="stat-card" style="text-align: left;">
-                <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--accent-gold);">
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--accent-primary);">
                     <i class="fa-solid fa-location-dot"></i> Informazioni sulla Sala
                 </h3>
                 <p><strong>Sala:</strong> <span th:text="${proiezione.sala.nome}">Nome Sala</span></p>
