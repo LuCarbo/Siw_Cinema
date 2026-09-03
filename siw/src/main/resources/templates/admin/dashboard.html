@@ -63,6 +63,12 @@
                                     <a th:href="@{'/festivals/modifica/' + ${fest.id}}" class="btn btn-sm btn-secondary" title="Modifica">
                                         <i class="fa-solid fa-pen"></i> Modifica
                                     </a>
+                                    <form th:action="@{'/festivals/' + ${fest.id} + '/elimina'}" method="post" style="display: inline;"
+                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo festival? Verranno rimosse anche le proiezioni associate.');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Elimina">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -110,6 +116,12 @@
                                     <a th:href="@{'/films/modifica/' + ${film.id}}" class="btn btn-sm btn-secondary" title="Modifica">
                                         <i class="fa-solid fa-pen"></i> Modifica
                                     </a>
+                                    <form th:action="@{'/films/' + ${film.id} + '/elimina'}" method="post" style="display: inline;"
+                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo film? Verranno rimosse anche le relative proiezioni e recensioni.');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Elimina">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -181,11 +193,19 @@
                 <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1rem;">
                     <div th:each="r : ${registi}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-subtle);">
                         <div>
-                            <strong th:text="${r.nomeCompleto}">Nome Cognome</strong>
+                            <a th:href="@{'/regista/' + ${r.id}}" style="color: var(--text-main); font-weight: 600;">
+                                <span th:text="${r.nomeCompleto}">Nome Cognome</span>
+                            </a>
                             <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${r.nazionalita + ' &bull; ' + r.film.size() + ' Film'}">Info</div>
                         </div>
                         <div style="display: flex; gap: 0.35rem;">
-                            <a th:href="@{'/registi/modifica/' + ${r.id}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pen"></i> Modifica</a>
+                            <a th:href="@{'/registi/modifica/' + ${r.id}}" class="btn btn-sm btn-secondary" title="Modifica"><i class="fa-solid fa-pen"></i></a>
+                            <form th:action="@{'/registi/' + ${r.id} + '/elimina'}" method="post" style="display: inline;"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo regista?');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Elimina">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -202,11 +222,19 @@
                 <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1rem;">
                     <div th:each="s : ${sale}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-subtle);">
                         <div>
-                            <strong th:text="${s.nome}">Nome Sala</strong>
+                            <a th:href="@{'/sala/' + ${s.id}}" style="color: var(--text-main); font-weight: 600;">
+                                <span th:text="${s.nome}">Nome Sala</span>
+                            </a>
                             <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${s.indirizzo + ' &bull; Capienza: ' + s.capienza + ' posti'}">Info</div>
                         </div>
                         <div style="display: flex; gap: 0.35rem;">
-                            <a th:href="@{'/sale/modifica/' + ${s.id}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pen"></i> Modifica</a>
+                            <a th:href="@{'/sale/modifica/' + ${s.id}}" class="btn btn-sm btn-secondary" title="Modifica"><i class="fa-solid fa-pen"></i></a>
+                            <form th:action="@{'/sale/' + ${s.id} + '/elimina'}" method="post" style="display: inline;"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questa sala? Verranno rimosse anche le proiezioni associate.');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Elimina">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

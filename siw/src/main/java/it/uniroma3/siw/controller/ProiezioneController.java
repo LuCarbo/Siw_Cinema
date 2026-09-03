@@ -106,8 +106,28 @@ public class ProiezioneController {
             return "proiezione/form";
         }
 
-        proiezioneService.saveProiezione(proiezione);
+        try {
+            if (proiezione.getId() == null) {
+                proiezione = proiezioneService.programmaNuovaProiezione(proiezione, festivalId, filmId, salaId);
+            } else {
+                proiezione = proiezioneService.saveProiezione(proiezione);
+            }
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            bindingResult.reject("proiezione.error", e.getMessage());
+            model.addAttribute("festivals", festivalService.getAllFestivals());
+            model.addAttribute("films", filmService.getAllFilms());
+            model.addAttribute("sale", salaService.getAllSale());
+            model.addAttribute("stati", StatoProiezione.values());
+            return "proiezione/form";
+        }
+
         return "redirect:/proiezione/" + proiezione.getId();
+    }
+
+    @PostMapping("/proiezioni/{id}/stato")
+    public String updateStatoProiezione(@PathVariable("id") Long id, @RequestParam("stato") StatoProiezione stato) {
+        proiezioneService.updateStato(id, stato);
+        return "redirect:/proiezione/" + id;
     }
 
     @GetMapping("/proiezioni/modifica/{id}")
@@ -122,6 +142,12 @@ public class ProiezioneController {
         model.addAttribute("sale", salaService.getAllSale());
         model.addAttribute("stati", StatoProiezione.values());
         return "proiezione/form";
+    }
+
+    @PostMapping("/proiezioni/{id}/elimina")
+    public String deleteProiezionePost(@PathVariable("id") Long id) {
+        proiezioneService.deleteProiezione(id);
+        return "redirect:/proiezioni";
     }
 
     @GetMapping("/proiezioni/elimina/{id}")

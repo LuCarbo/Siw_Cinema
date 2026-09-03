@@ -32,6 +32,12 @@
                     <a th:href="@{'/registi/modifica/' + ${regista.id}}" class="btn btn-sm btn-secondary">
                         <i class="fa-solid fa-pen"></i> Modifica Regista
                     </a>
+                    <form th:action="@{'/registi/' + ${regista.id} + '/elimina'}" method="post" style="display: inline;"
+                          onsubmit="return confirm('Sei sicuro di voler eliminare questo regista?');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fa-solid fa-trash"></i> Elimina Regista
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

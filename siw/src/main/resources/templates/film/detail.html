@@ -66,6 +66,12 @@
                         <a th:href="@{'/proiezioni/nuova?filmId=' + ${film.id}}" class="btn btn-secondary">
                             <i class="fa-solid fa-calendar-plus"></i> Nuova Proiezione
                         </a>
+                        <form th:action="@{'/films/' + ${film.id} + '/elimina'}" method="post" style="display: inline;"
+                              onsubmit="return confirm('Sei sicuro di voler eliminare questo film? Verranno rimosse anche le relative proiezioni e recensioni.');">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i> Elimina Film
+                            </button>
+                        </form>
                     </th:block>
                 </div>
             </div>
@@ -141,31 +147,17 @@
                 </div>
             </div>
 
-            <!-- Box Statistiche Recensioni -->
-            <div th:if="${!recensioni.isEmpty()}" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 1.75rem; display: grid; grid-template-columns: 180px 1fr; gap: 1.75rem; align-items: center;">
-                <div style="text-align: center; border-right: 1px solid var(--border-subtle); padding-right: 1.25rem;">
-                    <div style="font-size: 2.75rem; font-weight: 800; color: var(--text-main); line-height: 1; letter-spacing: -0.03em;" th:text="${film.getMediaVoti()}">4.5</div>
-                    <div style="color: var(--accent-amber); margin: 0.35rem 0;">
+            <!-- Riepilogo Valutazioni -->
+            <div th:if="${!recensioni.isEmpty()}" style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 1.5rem;">
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-main); line-height: 1;" th:text="${film.getMediaVoti()}">4.5</div>
+                <div>
+                    <div style="color: var(--accent-amber); margin-bottom: 0.25rem;">
                         <span th:each="i : ${#numbers.sequence(1, 5)}">
                             <i th:class="${i <= film.getMediaVoti()} ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
                         </span>
+                        <span style="color: var(--text-main); font-weight: 600; margin-left: 0.5rem;" th:text="${film.getMediaVoti()} + ' su 5'">4.5 su 5</span>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${film.getNumeroRecensioni()} + ' valutazioni'">0 valutazioni</div>
-                    <div th:if="${film.getTassoGradimento() > 0}" style="margin-top: 0.4rem;">
-                        <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); font-size: 0.725rem;" th:text="${film.getTassoGradimento()} + '% gradimento'">100% gradimento</span>
-                    </div>
-                </div>
-
-                <!-- Barre percentuali per stella -->
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <div th:each="entry : ${film.getPercentualiVoti()}" style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.8rem;">
-                        <span style="min-width: 45px; color: var(--text-muted);" th:text="${entry.key} + ' stelle'">5 stelle</span>
-                        <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
-                            <div th:style="'width: ' + ${entry.value} + '%; height: 100%; background: var(--accent-primary); border-radius: 3px;'"></div>
-                        </div>
-                        <span style="min-width: 35px; text-align: right; color: var(--text-dim);" th:text="${entry.value} + '%'">0%</span>
-                        <span style="min-width: 25px; text-align: right; color: var(--text-muted);" th:text="'(' + ${film.getDistribuzioneVoti().get(entry.key)} + ')'">(0)</span>
-                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);" th:text="'Basato su ' + ${film.getNumeroRecensioni()} + ' recensioni della community'">0 valutazioni</div>
                 </div>
             </div>
 

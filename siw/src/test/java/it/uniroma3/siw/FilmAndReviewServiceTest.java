@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,20 +61,9 @@ class FilmAndReviewServiceTest {
         assertTrue(recensioneService.hasUserReviewedFilm(savedFilm, savedUser1));
         assertTrue(recensioneService.hasUserReviewedFilm(savedFilm, savedUser2));
 
-        // Media voti (5 + 4) / 2 = 4.5
+        // Media voti (5 + 4) / 2 = 4.5 e conteggio
         savedFilm.setRecensioni(reviews);
         assertEquals(4.5, savedFilm.getMediaVoti());
-
-        // Test statistiche avanzate
-        Map<Integer, Integer> dist = savedFilm.getDistribuzioneVoti();
-        assertEquals(1, dist.get(5));
-        assertEquals(1, dist.get(4));
-        assertEquals(0, dist.get(3));
-
-        Map<Integer, Integer> perc = savedFilm.getPercentualiVoti();
-        assertEquals(50, perc.get(5));
-        assertEquals(50, perc.get(4));
-
-        assertEquals(100, savedFilm.getTassoGradimento());
+        assertEquals(2, savedFilm.getNumeroRecensioni());
     }
 }

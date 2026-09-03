@@ -86,28 +86,29 @@ Il dominio applicativo è modellato tramite **8 entità JPA**:
 - **Visualizzazione dettaglio film** (`GET /film/{id}`): Dati completi del film, scheda del regista, festival a cui partecipa, proiezioni programmate e lista recensioni della community.
 - **Visualizzazione dati del regista** (`GET /regista/{id}`): Scheda biografica e filmografia completa del regista.
 - **Visualizzazione programma generale delle proiezioni** (`GET /proiezioni`): Calendario degli eventi filtrabile per festival, film e sala.
-- **Esploratore React** (`GET /explorer`): Vista client-side interattiva in React.
+- **Dettaglio sala cinematografica** (`GET /sala/{id}`): Informazioni della sala e calendario delle relative proiezioni programmate.
+- **Catalogo Film con Filtro React 18** (`GET /films`): Componente client-side interattivo in React con ricerca dinamica istantanea in tempo reale.
 
 ### 2. Funzionalità Utenti Registrati (Ruolo `USER`)
 - **Inserimento recensione per un film** (`GET /recensioni/nuova/{filmId}`, `POST /recensioni/salva`):
   - È consentita **al massimo una recensione per film** da parte dello stesso utente (verificato da `RecensioneValidator` e service).
 - **Modifica di una propria recensione** (`GET /recensioni/modifica/{id}`):
   - L'utente può modificare **esclusivamente** le recensioni di cui è l'autore.
-- **Eliminazione di una propria recensione** (`GET /recensioni/elimina/{id}`):
-  - L'utente può eliminare **esclusivamente** le proprie recensioni.
+- **Cancellazione di una propria recensione** (`/recensioni/elimina/{id}`):
+  - Rimozione consentita solo all'autore o all'amministratore.
 - **Profilo personale** (`GET /profilo`):
   - Riepilogo dei dati personali e pannello di gestione delle proprie recensioni pubblicate.
 
 ### 3. Funzionalità Amministratore (Ruolo `ADMIN`)
 - **Pannello di controllo unificato** (`GET /admin/dashboard`).
-- **Creazione e modifica Festival** (`/festivals/nuovo`, `/festivals/modifica/{id}`).
-- **Inserimento e modifica Film** (`/films/nuovo`, `/films/modifica/{id}`).
-- **Inserimento e modifica Regista** (`/registi/nuovo`, `/registi/modifica/{id}`).
-- **Inserimento e modifica Sala** (`/sale/nuova`, `/sale/modifica/{id}`).
+- **CRUD completo Festival** (`/festivals/nuovo`, `/festivals/modifica/{id}`, `/festivals/{id}/elimina`).
+- **CRUD completo Film** (`/films/nuovo`, `/films/modifica/{id}`, `/films/{id}/elimina`).
+- **CRUD completo Regista** (`/registi/nuovo`, `/registi/modifica/{id}`, `/registi/{id}/elimina`).
+- **CRUD completo Sala** (`/sale/nuova`, `/sale/modifica/{id}`, `/sale/{id}/elimina`).
 - **Associazione ed eliminazione di un film da un festival** (`/festivals/{id}/gestione-film`).
-- **Programmazione, modifica e cancellazione di una proiezione** (`/proiezioni/nuova`, `/proiezioni/modifica/{id}`, `/proiezioni/elimina/{id}`).
+- **Programmazione, modifica, cambio rapido di stato e cancellazione di una proiezione** (`/proiezioni/nuova`, `/proiezioni/modifica/{id}`, `/proiezioni/{id}/stato`, `/proiezioni/{id}/elimina`).
   - **Verifiche di consistenza**:
-    1. *Controllo sovrapposizioni*: Impossibile programmare due proiezioni nella stessa sala alla stessa data e ora.
+    1. *Controllo sovrapposizioni orarie*: Verifica automatica che la sala non sia già occupata, calcolando l'intervallo temporale completo in base all'orario di inizio e alla durata del film (`ora_inizio + film.durata`).
     2. *Controllo date festival*: La data della proiezione deve rientrare nell'intervallo di date del festival.
 
 ---
@@ -180,7 +181,7 @@ Gli errori generano risposte JSON standardizzate:
   - `USER`: Utente registrato standard.
   - `ADMIN`: Amministratore con accesso completo al pannello `/admin/**`.
 - **Protezione Rotte (Spring Security):**
-  - Risorse statiche, pagine pubbliche (`/`, `/festivals`, `/films`, `/proiezioni`, `/explorer`) e endpoint `GET /api/**` accessibili liberamente (`permitAll`).
+  - Risorse statiche, pagine pubbliche (`/`, `/festivals`, `/films`, `/proiezioni`, `/regista/**`, `/sala/**`) e endpoint `GET /api/**` accessibili liberamente (`permitAll`).
   - `/recensioni/**` e `/profilo/**` accessibili solo ad utenti autenticati (`USER` o `ADMIN`).
   - Rotte di creazione/modifica e dashboard `/admin/**` accessibili esclusivamente al ruolo `ADMIN`.
 

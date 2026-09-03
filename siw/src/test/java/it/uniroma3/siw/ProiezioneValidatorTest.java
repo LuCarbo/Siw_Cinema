@@ -75,4 +75,34 @@ class ProiezioneValidatorTest {
 
         assertTrue(errors.hasErrors());
     }
+
+    @Test
+    void testProiezioneRoomDurationOverlapConflict() {
+        Festival festival = festivalService.getAllFestivals().getFirst();
+        // Creiamo due film con durata nota: film1 (120 min), film2 (90 min)
+        Film film1 = new Film("Film Test 1", 2024, 120, "Drammatico", "Italia");
+        film1 = filmService.saveFilm(film1);
+
+        Film film2 = new Film("Film Test 2", 2024, 90, "Commedia", "Italia");
+        film2 = filmService.saveFilm(film2);
+
+        Sala sala = salaService.getAllSale().getFirst();
+        LocalDate data = festival.getDataInizio();
+
+        // Proiezione 1: 20:00 - 22:00 (durata 120 min)
+        Proiezione p1 = new Proiezione(data, LocalTime.of(20, 0), StatoProiezione.SCHEDULED, festival, film1, sala);
+        proiezioneService.saveProiezione(p1);
+
+        // Proiezione 2: inizio alle 20:45 (in piena sovrapposizione temporale con film1)
+        Proiezione p2Overlap = new Proiezione(data, LocalTime.of(20, 45), StatoProiezione.SCHEDULED, festival, film2, sala);
+        Errors errorsOverlap = new BeanPropertyBindingResult(p2Overlap, "proiezione");
+        proiezioneValidator.validate(p2Overlap, errorsOverlap);
+        assertTrue(errorsOverlap.hasErrors(), "La proiezione deve essere rifiutata per sovrapposizione con la durata del film precedente!");
+
+        // Proiezione 3: inizio alle 22:30 (dopo la fine di film1, nessuna sovrapposizione)
+        Proiezione p3NoOverlap = new Proiezione(data, LocalTime.of(22, 30), StatoProiezione.SCHEDULED, festival, film2, sala);
+        Errors errorsNoOverlap = new BeanPropertyBindingResult(p3NoOverlap, "proiezione");
+        proiezioneValidator.validate(p3NoOverlap, errorsNoOverlap);
+        assertFalse(errorsNoOverlap.hasErrors(), "La proiezione alle 22:30 non deve presentare conflitti!");
+    }
 }

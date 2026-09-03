@@ -39,11 +39,11 @@ public class SecurityConfiguration {
 
                 // 4. Funzionalità riservate ad Amministratori (prima dei pattern generici)
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                .requestMatchers("/festivals/nuovo", "/festivals/salva", "/festivals/modifica/**", "/festivals/*/gestione-film", "/festivals/*/film/**").hasAuthority("ADMIN")
-                .requestMatchers("/films/nuovo", "/films/salva", "/films/modifica/**").hasAuthority("ADMIN")
-                .requestMatchers("/registi/nuovo", "/registi/salva", "/registi/modifica/**").hasAuthority("ADMIN")
-                .requestMatchers("/sale/nuova", "/sale/salva", "/sale/modifica/**").hasAuthority("ADMIN")
-                .requestMatchers("/proiezioni/nuova", "/proiezioni/salva", "/proiezioni/modifica/**", "/proiezioni/elimina/**").hasAuthority("ADMIN")
+                .requestMatchers("/festivals/nuovo", "/festivals/salva", "/festivals/modifica/**", "/festivals/*/gestione-film", "/festivals/*/film/**", "/festivals/*/elimina", "/festivals/elimina/**").hasAuthority("ADMIN")
+                .requestMatchers("/films/nuovo", "/films/salva", "/films/modifica/**", "/films/*/elimina", "/films/elimina/**").hasAuthority("ADMIN")
+                .requestMatchers("/registi/nuovo", "/registi/salva", "/registi/modifica/**", "/registi/*/elimina", "/registi/elimina/**").hasAuthority("ADMIN")
+                .requestMatchers("/sale/nuova", "/sale/salva", "/sale/modifica/**", "/sale/*/elimina", "/sale/elimina/**").hasAuthority("ADMIN")
+                .requestMatchers("/proiezioni/nuova", "/proiezioni/salva", "/proiezioni/modifica/**", "/proiezioni/elimina/**", "/proiezioni/*/elimina", "/proiezioni/*/stato").hasAuthority("ADMIN")
 
                 // 5. Funzionalità per Utenti Registrati e Admin (Recensioni e Profilo)
                 .requestMatchers("/recensioni/**", "/profilo/**").hasAnyAuthority("ADMIN", "USER", "DEFAULT")
@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/festivals", "/festival/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/films", "/film/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/regista/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/sala/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/proiezioni", "/proiezione/**").permitAll()
 
                 // 7. Tutte le altre richieste richiedono autenticazione

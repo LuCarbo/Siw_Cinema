@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -84,6 +85,27 @@ public class ProiezioneService {
         return proiezioneRepository.findBySalaOrderByDataAscOraAsc(sala);
     }
 
+    @Transactional(readOnly = true)
+    public boolean hasRoomConflict(Sala sala, LocalDate data, LocalTime ora, Integer durata, Long currentProiezioneId) {
+        if (sala == null || data == null || ora == null || durata == null) {
+            return false;
+        }
+        List<Proiezione> proiezioniGiorno = proiezioneRepository.findBySalaAndDataExcludingId(sala, data, currentProiezioneId);
+        LocalTime newStart = ora;
+        LocalTime newEnd = ora.plusMinutes(durata);
+
+        for (Proiezione p : proiezioniGiorno) {
+            LocalTime existingStart = p.getOra();
+            int existingDurata = (p.getFilm() != null && p.getFilm().getDurata() != null) ? p.getFilm().getDurata() : 0;
+            LocalTime existingEnd = existingStart.plusMinutes(existingDurata);
+
+            if (existingStart.isBefore(newEnd) && newStart.isBefore(existingEnd)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ==========================================
     // OPERAZIONI DI AGGIORNAMENTO / SCRITTURA
     // ==========================================
@@ -113,12 +135,10 @@ public class ProiezioneService {
                     ") non rientra nelle date del festival (" + festival.getDataInizio() + " - " + festival.getDataFine() + ")");
         }
 
-        // 5. Verifica disponibilità della sala (assenza conflitti)
-        List<Proiezione> conflitti = proiezioneRepository.findConflictingProjections(
-                sala, proiezione.getData(), proiezione.getOra(), proiezione.getId());
-        if (!conflitti.isEmpty()) {
+        // 5. Verifica disponibilità della sala (assenza conflitti considerando orario e durata)
+        if (hasRoomConflict(sala, proiezione.getData(), proiezione.getOra(), film.getDurata(), proiezione.getId())) {
             throw new IllegalStateException("La sala " + sala.getNome() + " è già occupata per la data " + 
-                    proiezione.getData() + " alle ore " + proiezione.getOra());
+                    proiezione.getData() + " nell'intervallo orario richiesto (in sovrapposizione con la durata di un'altra proiezione).");
         }
 
         // 6. Aggiornamento associazione Film-Festival se non ancora presente

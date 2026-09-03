@@ -40,6 +40,12 @@
                     <a th:href="@{'/festivals/modifica/' + ${festival.id}}" class="btn btn-sm btn-secondary">
                         <i class="fa-solid fa-pen"></i> Modifica Festival
                     </a>
+                    <form th:action="@{'/festivals/' + ${festival.id} + '/elimina'}" method="post" style="display: inline;"
+                          onsubmit="return confirm('Sei sicuro di voler eliminare questo festival? Verranno rimosse anche le relative proiezioni.');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fa-solid fa-trash"></i> Elimina Festival
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -23,18 +23,24 @@ public class RecensioneValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Recensione recensione = (Recensione) target;
 
+        if (recensione.getVoto() == null) {
+            errors.rejectValue("voto", "recensione.voto.notnull", "La valutazione è obbligatoria.");
+        } else if (recensione.getVoto() < 1 || recensione.getVoto() > 5) {
+            errors.rejectValue("voto", "recensione.voto.range", "Il voto deve essere compreso tra 1 e 5.");
+        }
+
+        if (recensione.getTesto() == null || recensione.getTesto().trim().isEmpty()) {
+            errors.rejectValue("testo", "recensione.testo.notblank", "Il testo della recensione non può essere vuoto.");
+        } else if (recensione.getTesto().length() > 2000) {
+            errors.rejectValue("testo", "recensione.testo.length", "Il testo non può superare i 2000 caratteri.");
+        }
+
         if (recensione.getFilm() != null && recensione.getAutore() != null) {
             Optional<Recensione> existing = recensioneRepository.findByFilmAndAutore(recensione.getFilm(), recensione.getAutore());
             if (existing.isPresent()) {
                 if (recensione.getId() == null || !existing.get().getId().equals(recensione.getId())) {
                     errors.reject("recensione.duplicate", "Hai già inserito una recensione per questo film. Puoi modificare quella esistente.");
                 }
-            }
-        }
-
-        if (recensione.getVoto() != null) {
-            if (recensione.getVoto() < 1 || recensione.getVoto() > 5) {
-                errors.rejectValue("voto", "recensione.voto.range", "Il voto deve essere compreso tra 1 e 5.");
             }
         }
     }

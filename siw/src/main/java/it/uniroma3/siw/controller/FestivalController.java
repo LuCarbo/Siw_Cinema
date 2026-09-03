@@ -119,4 +119,16 @@ public class FestivalController {
         festivalService.removeFilmFromFestival(id, filmId);
         return "redirect:/festivals/" + id + "/gestione-film";
     }
+
+    @PostMapping("/festivals/{id}/elimina")
+    public String deleteFestival(@PathVariable("id") Long id) {
+        festivalService.deleteFestival(id);
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/festivals/elimina/{id}")
+    public String deleteFestivalGet(@PathVariable("id") Long id) {
+        festivalService.deleteFestival(id);
+        return "redirect:/admin/dashboard";
+    }
 }

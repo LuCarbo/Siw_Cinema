@@ -1,5 +1,9 @@
 package it.uniroma3.siw;
 
+import it.uniroma3.siw.model.Film;
+import it.uniroma3.siw.service.FilmService;
+import it.uniroma3.siw.service.RecensioneService;
+import it.uniroma3.siw.service.CredentialsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -18,6 +25,15 @@ class SecurityAndControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private FilmService filmService;
+
+    @Autowired
+    private RecensioneService recensioneService;
+
+    @Autowired
+    private CredentialsService credentialsService;
 
     private MockMvc mockMvc;
 
@@ -85,5 +101,35 @@ class SecurityAndControllerTest {
         mockMvc.perform(get("/films/nuovo"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("film/form"));
+    }
+
+    @Test
+    @WithMockUser(username = "giulia", authorities = {"DEFAULT"})
+    void testSaveReviewSuccess() throws Exception {
+        Film film = new Film("Film Per Test Recensione", 2025, 110, "Commedia", "Italia");
+        film = filmService.saveFilm(film);
+
+        mockMvc.perform(post("/recensioni/salva")
+                .with(csrf())
+                .param("filmId", film.getId().toString())
+                .param("voto", "5")
+                .param("titolo", "Test titolo da test")
+                .param("testo", "Recensione eccellente scritta da utente autenticato"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/film/" + film.getId()));
+    }
+
+    @Test
+    @WithMockUser(username = "giulia", authorities = {"DEFAULT"})
+    void testSaveReviewValidationErrors() throws Exception {
+        Film film = filmService.getAllFilms().getFirst();
+        mockMvc.perform(post("/recensioni/salva")
+                .with(csrf())
+                .param("filmId", film.getId().toString())
+                .param("voto", "")
+                .param("testo", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("recensione/form"))
+                .andExpect(model().attributeHasFieldErrors("recensione", "voto", "testo"));
     }
 }

@@ -63,7 +63,8 @@
 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">
-                        <i class="fa-solid fa-paper-plane"></i> Pubblica Recensione
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span th:text="${recensione.id == null ? 'Pubblica Recensione' : 'Salva Modifiche'}">Pubblica Recensione</span>
                     </button>
                     <a th:href="@{'/film/' + ${film.id}}" class="btn btn-secondary">Annulla</a>
                 </div>

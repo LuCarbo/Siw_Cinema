@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import java.time.LocalTime;
 import java.util.List;
 
 @Component
@@ -34,17 +35,31 @@ public class ProiezioneValidator implements Validator {
             }
         }
 
-        // Validazione conflitti di sala e orario
+        // Validazione conflitti di sala e orario (considerando orario e durata del film)
         if (proiezione.getSala() != null && proiezione.getData() != null && proiezione.getOra() != null) {
-            List<Proiezione> conflicts = proiezioneRepository.findConflictingProjections(
-                    proiezione.getSala(),
-                    proiezione.getData(),
-                    proiezione.getOra(),
-                    proiezione.getId()
-            );
+            int durata = (proiezione.getFilm() != null && proiezione.getFilm().getDurata() != null) 
+                    ? proiezione.getFilm().getDurata() : 120;
 
-            if (!conflicts.isEmpty()) {
-                errors.reject("proiezione.conflict", "La sala selezionata è già occupata per la data e l'ora specificate.");
+            List<Proiezione> proiezioniGiorno = proiezioneRepository.findBySalaAndDataExcludingId(
+                    proiezione.getSala(), proiezione.getData(), proiezione.getId());
+
+            LocalTime newStart = proiezione.getOra();
+            LocalTime newEnd = newStart.plusMinutes(durata);
+            boolean conflict = false;
+
+            for (Proiezione p : proiezioniGiorno) {
+                LocalTime extStart = p.getOra();
+                int extDurata = (p.getFilm() != null && p.getFilm().getDurata() != null) ? p.getFilm().getDurata() : 0;
+                LocalTime extEnd = extStart.plusMinutes(extDurata);
+
+                if (extStart.isBefore(newEnd) && newStart.isBefore(extEnd)) {
+                    conflict = true;
+                    break;
+                }
+            }
+
+            if (conflict) {
+                errors.reject("proiezione.conflict", "La sala selezionata è già occupata per l'intervallo orario specificato (in sovrapposizione con la durata di un'altra proiezione).");
             }
         }
     }

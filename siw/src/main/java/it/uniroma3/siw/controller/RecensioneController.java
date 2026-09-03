@@ -60,13 +60,38 @@ public class RecensioneController {
     }
 
     @PostMapping("/salva")
-    public String saveRecensione(@Valid @ModelAttribute("recensione") Recensione recensione,
+    public String saveRecensione(@ModelAttribute("recensione") Recensione recensione,
                                  BindingResult bindingResult,
                                  @RequestParam("filmId") Long filmId,
                                  Model model) {
 
         Film film = filmService.getFilm(filmId);
+        if (film == null) {
+            return "redirect:/films";
+        }
+
         Utente currentUser = credentialsService.getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Se l'id è 0 o negativo, trattalo come nuovo inserimento
+        if (recensione.getId() != null && recensione.getId() <= 0) {
+            recensione.setId(null);
+        }
+
+        // Controllo di sicurezza: se si modifica una recensione esistente, verificare che appartenga all'utente
+        if (recensione.getId() != null) {
+            Recensione existing = recensioneService.getRecensione(recensione.getId());
+            if (existing == null) {
+                return "redirect:/films";
+            }
+            Credentials creds = credentialsService.getCurrentCredentials();
+            boolean isAdmin = creds != null && creds.isAdmin();
+            if (!recensioneService.canUserModify(existing, currentUser, isAdmin)) {
+                return "redirect:/film/" + filmId;
+            }
+        }
 
         recensione.setFilm(film);
         recensione.setAutore(currentUser);
@@ -100,6 +125,11 @@ public class RecensioneController {
         model.addAttribute("recensione", recensione);
         model.addAttribute("film", recensione.getFilm());
         return "recensione/form";
+    }
+
+    @PostMapping("/elimina/{id}")
+    public String deleteRecensionePost(@PathVariable("id") Long id) {
+        return deleteRecensione(id);
     }
 
     @GetMapping("/elimina/{id}")

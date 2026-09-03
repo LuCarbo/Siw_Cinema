@@ -34,12 +34,10 @@ public class Recensione {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 
-    @NotNull(message = "{recensione.film.notnull}")
     @ManyToOne
     @JoinColumn(name = "film_id", nullable = false)
     private Film film;
 
-    @NotNull(message = "{recensione.autore.notnull}")
     @ManyToOne
     @JoinColumn(name = "utente_id", nullable = false)
     private Utente autore;

@@ -109,4 +109,16 @@ public class FilmController {
         model.addAttribute("registi", registaService.getAllRegisti());
         return "film/form";
     }
+
+    @PostMapping("/films/{id}/elimina")
+    public String deleteFilm(@PathVariable("id") Long id) {
+        filmService.deleteFilm(id);
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/films/elimina/{id}")
+    public String deleteFilmGet(@PathVariable("id") Long id) {
+        filmService.deleteFilm(id);
+        return "redirect:/admin/dashboard";
+    }
 }

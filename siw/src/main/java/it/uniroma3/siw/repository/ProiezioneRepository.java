@@ -38,6 +38,11 @@ public interface ProiezioneRepository extends CrudRepository<Proiezione, Long> {
     @Query("SELECT p FROM Proiezione p JOIN FETCH p.festival JOIN FETCH p.film JOIN FETCH p.sala WHERE p.data >= :data ORDER BY p.data ASC, p.ora ASC")
     List<Proiezione> findByDataGreaterThanEqualOrderByDataAscOraAsc(@Param("data") LocalDate data);
 
+    @Query("SELECT p FROM Proiezione p JOIN FETCH p.film WHERE p.sala = :sala AND p.data = :data AND (:id IS NULL OR p.id <> :id)")
+    List<Proiezione> findBySalaAndDataExcludingId(@Param("sala") Sala sala,
+                                                 @Param("data") LocalDate data,
+                                                 @Param("id") Long id);
+
     @Query("SELECT p FROM Proiezione p WHERE p.sala = :sala AND p.data = :data AND p.ora = :ora AND (:id IS NULL OR p.id <> :id)")
     List<Proiezione> findConflictingProjections(@Param("sala") Sala sala,
                                               @Param("data") LocalDate data,

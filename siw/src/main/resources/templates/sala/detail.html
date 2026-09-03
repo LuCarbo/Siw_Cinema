@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${sala.nome})}"></head>
+<body>
+
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="main-content container">
+        
+        <div class="detail-banner" style="align-items: center; gap: 2.5rem;">
+            <div style="width: 130px; height: 130px; border-radius: var(--radius-lg); background: var(--accent-primary-light); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--accent-primary); border: 2px solid var(--accent-primary-border); box-shadow: var(--shadow-lg);">
+                <i class="fa-solid fa-couch"></i>
+            </div>
+            
+            <div class="detail-info">
+                <span class="badge badge-admin" style="width: fit-content; margin-bottom: 0.5rem;">Sala Cinematografica</span>
+                <h1 class="detail-title" th:text="${sala.nome}">Nome Sala</h1>
+                <div class="detail-badges">
+                    <span class="badge" style="background: var(--accent-primary-light); color: #c7d2fe; border: 1px solid var(--accent-primary-border);">
+                        <i class="fa-solid fa-location-dot"></i> <span th:text="${sala.indirizzo}" style="margin-left: 0.3rem;">Indirizzo</span>
+                    </span>
+                    <span class="badge" style="background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25);">
+                        <i class="fa-solid fa-users"></i> <span th:text="'Capienza: ' + ${sala.capienza} + ' posti'" style="margin-left: 0.3rem;">0 posti</span>
+                    </span>
+                    <span class="badge" style="background: rgba(56,189,248,0.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.25);">
+                        <i class="fa-solid fa-calendar-days"></i> <span th:text="${proiezioni.size() + ' Proiezioni in Programma'}" style="margin-left: 0.3rem;">0 Proiezioni</span>
+                    </span>
+                </div>
+
+                <div th:if="${isAdmin}" style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+                    <a th:href="@{'/sale/modifica/' + ${sala.id}}" class="btn btn-sm btn-secondary">
+                        <i class="fa-solid fa-pen"></i> Modifica Sala
+                    </a>
+                    <form th:action="@{'/sale/' + ${sala.id} + '/elimina'}" method="post" style="display: inline;"
+                          onsubmit="return confirm('Sei sicuro di voler eliminare questa sala? Tutte le proiezioni associate verranno cancellate.');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fa-solid fa-trash"></i> Elimina Sala
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proiezioni nella sala -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Calendario Proiezioni in questa Sala (<span th:text="${proiezioni.size()}">0</span>)</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Tutte le proiezioni programmate in questa struttura</p>
+                </div>
+                <div th:if="${isAdmin}">
+                    <a th:href="@{/proiezioni/nuova}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-plus"></i> Programma Nuova Proiezione
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${!proiezioni.isEmpty()}">
+                <div th:each="p : ${proiezioni}" class="projection-item">
+                    <div class="proj-time">
+                        <span class="proj-date" th:text="${p.data}">2026-08-28</span>
+                        <span class="proj-hour" th:text="${p.ora}">20:30</span>
+                    </div>
+                    <div class="proj-details">
+                        <h4 class="proj-film">
+                            <a th:href="@{'/film/' + ${p.film.id}}" th:text="${p.film.titolo}">Titolo Film</a>
+                        </h4>
+                        <div class="proj-meta">
+                            <span><i class="fa-solid fa-trophy" style="color: var(--accent-primary);"></i> <a th:href="@{'/festival/' + ${p.festival.id}}" th:text="${p.festival.nome}" style="color: var(--text-muted);">Festival</a></span>
+                            <span><i class="fa-solid fa-clock" style="color: var(--accent-primary);"></i> <span th:text="${p.film.durata + ' min'}" style="color: var(--text-muted);">120 min</span></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-scheduled" th:if="${p.stato.name() == 'SCHEDULED'}" th:text="${p.stato.label}">Programmata</span>
+                        <span class="badge badge-completed" th:if="${p.stato.name() == 'COMPLETED'}" th:text="${p.stato.label}">Completata</span>
+                        <span class="badge badge-cancelled" th:if="${p.stato.name() == 'CANCELLED'}" th:text="${p.stato.label}">Annullata</span>
+                        
+                        <a th:href="@{'/proiezione/' + ${p.id}}" class="btn btn-sm btn-secondary">Dettagli</a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${proiezioni.isEmpty()}" style="text-align: center; padding: 3rem 0; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-calendar-xmark" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+                <p style="color: var(--text-secondary);">Nessuna proiezione programmata per questa sala.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

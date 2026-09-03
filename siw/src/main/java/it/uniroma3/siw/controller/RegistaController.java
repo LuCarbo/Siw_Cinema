@@ -58,4 +58,16 @@ public class RegistaController {
         model.addAttribute("regista", regista);
         return "regista/form";
     }
+
+    @PostMapping("/registi/{id}/elimina")
+    public String deleteRegista(@PathVariable("id") Long id) {
+        registaService.deleteRegista(id);
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/registi/elimina/{id}")
+    public String deleteRegistaGet(@PathVariable("id") Long id) {
+        registaService.deleteRegista(id);
+        return "redirect:/admin/dashboard";
+    }
 }
