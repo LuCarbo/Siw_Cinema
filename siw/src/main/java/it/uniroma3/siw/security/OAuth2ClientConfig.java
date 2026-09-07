@@ -17,12 +17,16 @@ public class OAuth2ClientConfig {
     public ClientRegistrationRepository clientRegistrationRepository(
             @Value("${google.oauth.client-id:}") String clientId,
             @Value("${google.oauth.client-secret:}") String clientSecret,
-            @Value("${google.oauth.redirect-uri:http://localhost:8080/login/oauth2/code/google}") String redirectUri) {
+            @Value("${google.oauth.redirect-uri:{baseUrl}/login/oauth2/code/{registrationId}}") String redirectUri) {
+
+        String effectiveRedirectUri = (redirectUri != null && !redirectUri.trim().isEmpty())
+                ? redirectUri.trim()
+                : "{baseUrl}/login/oauth2/code/{registrationId}";
 
         ClientRegistration googleRegistration = CommonOAuth2Provider.GOOGLE.getBuilder("google")
                 .clientId(clientId.trim())
                 .clientSecret(clientSecret.trim())
-                .redirectUri(redirectUri.trim())
+                .redirectUri(effectiveRedirectUri)
                 .scope("email", "profile")
                 .build();
 
