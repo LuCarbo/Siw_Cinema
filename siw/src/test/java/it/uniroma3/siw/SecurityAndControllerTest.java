@@ -132,4 +132,48 @@ class SecurityAndControllerTest {
                 .andExpect(view().name("recensione/form"))
                 .andExpect(model().attributeHasFieldErrors("recensione", "voto", "testo"));
     }
+
+    @Test
+    void testLoginFormHasGoogleAuthEnabledAttribute() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/login"))
+                .andExpect(model().attributeExists("googleAuthEnabled"));
+    }
+
+    @Test
+    void testFormLoginSuccess() throws Exception {
+        mockMvc.perform(post("/login")
+                .with(csrf())
+                .param("username", "mario")
+                .param("password", "password"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/success"));
+    }
+
+    @Test
+    void testFormLoginFailure() throws Exception {
+        mockMvc.perform(post("/login")
+                .with(csrf())
+                .param("username", "mario")
+                .param("password", "wrongpassword"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error=true"));
+    }
+
+    @Test
+    @WithMockUser(username = "mario", authorities = {"USER"})
+    void testSuccessRedirectsToHomeForUser() throws Exception {
+        mockMvc.perform(get("/success"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
+    void testSuccessRedirectsToAdminDashboard() throws Exception {
+        mockMvc.perform(get("/success"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/dashboard"));
+    }
 }

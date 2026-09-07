@@ -11,17 +11,18 @@ Tutti gli endpoint rispondono con dati in formato **JSON** e utilizzano codici d
 - [1. Festival (`/api/festivals`)](#1-festival)
   - `GET /api/festivals`
   - `GET /api/festivals/{id}`
-  - `GET /api/festivals/{id}/movies`
-  - `GET /api/festivals/{id}/screenings`
-- [2. Film (`/api/movies`)](#2-film)
+  - `GET /api/festivals/{id}/movies` *(alias: `/api/festivals/{id}/films`)*
+  - `GET /api/festivals/{id}/screenings` *(alias: `/api/festivals/{id}/proiezioni`)*
+- [2. Film (`/api/movies` o `/api/films`)](#2-film)
   - `GET /api/movies`
   - `GET /api/movies/{id}`
-  - `GET /api/movies/{id}/reviews`
-- [3. Proiezioni (`/api/screenings`)](#3-proiezioni)
+  - `GET /api/movies/{id}/reviews` *(alias: `/api/movies/{id}/recensioni`)*
+- [3. Proiezioni (`/api/screenings` o `/api/proiezioni`)](#3-proiezioni)
   - `GET /api/screenings`
   - `GET /api/screenings/{id}`
-- [4. Recensioni (`/api/reviews`)](#4-recensioni)
+- [4. Recensioni (`/api/reviews` o `/api/recensioni`)](#4-recensioni)
   - `GET /api/reviews/{id}`
+  - `GET /api/reviews/film/{filmId}`
   - `POST /api/reviews`
   - `PUT /api/reviews/{id}`
   - `DELETE /api/reviews/{id}`
@@ -213,7 +214,7 @@ Restituisce i dettagli di una specifica proiezione.
 
 ## 4. Recensioni
 
-### `GET /api/reviews/{id}`
+### `GET /api/reviews/{id}` *(alias: `/api/recensioni/{id}`)*
 Restituisce una singola recensione tramite il suo ID.
 
 - **Codici di stato:**
@@ -222,7 +223,32 @@ Restituisce una singola recensione tramite il suo ID.
 
 ---
 
-### `POST /api/reviews`
+### `GET /api/reviews/film/{filmId}` *(alias: `/api/recensioni/film/{filmId}`)*
+Restituisce tutte le recensioni associate a un determinato film (fornito direttamente da `RecensioneRestController`).
+
+- **Codici di stato:**
+  - `200 OK`: lista recensioni recuperata
+  - `404 Not Found`: film non trovato
+- **Esempio di risposta (`200 OK`):**
+```json
+[
+  {
+    "id": 1,
+    "voto": 5,
+    "titolo": "Capolavoro assoluto",
+    "testo": "Fotografia magistrale e colonna sonora indimenticabile.",
+    "data": "2026-08-20",
+    "filmId": 1,
+    "titoloFilm": "Oppenheimer",
+    "autoreId": 2,
+    "nomeAutore": "Mario Bianchi"
+  }
+]
+```
+
+---
+
+### `POST /api/reviews` *(alias: `/api/recensioni`)*
 Crea una nuova recensione per un film. Richiede autenticazione.
 
 - **Corpo della richiesta (JSON):**
@@ -243,7 +269,7 @@ Crea una nuova recensione per un film. Richiede autenticazione.
 
 ---
 
-### `PUT /api/reviews/{id}`
+### `PUT /api/reviews/{id}` *(alias: `/api/recensioni/{id}`)*
 Modifica una recensione esistente. Riservato all'autore della recensione o all'amministratore.
 
 - **Corpo della richiesta (JSON):**
@@ -262,7 +288,7 @@ Modifica una recensione esistente. Riservato all'autore della recensione o all'a
 
 ---
 
-### `DELETE /api/reviews/{id}`
+### `DELETE /api/reviews/{id}` *(alias: `/api/recensioni/{id}`)*
 Elimina una recensione. Riservato all'autore della recensione o all'amministratore.
 
 - **Codici di stato:**
@@ -274,7 +300,7 @@ Elimina una recensione. Riservato all'autore della recensione o all'amministrato
 
 ## 5. Gestione degli Errori
 
-Quando una richiesta fallisce, il gestore globale `@RestControllerAdvice` ([RestExceptionHandler.java](file:///Users/lucacarbonetti/SIW/Siw_Cinema/siw/src/main/java/it/uniroma3/siw/controller/rest/RestExceptionHandler.java)) restituisce una risposta JSON strutturata con il relativo codice di errore HTTP:
+Quando una richiesta fallisce, il gestore globale `@RestControllerAdvice` ([RestExceptionHandler.java](siw/src/main/java/it/uniroma3/siw/controller/rest/RestExceptionHandler.java)) restituisce una risposta JSON strutturata con il relativo codice di errore HTTP:
 
 ### Esempio Errore `404 Not Found`:
 ```json

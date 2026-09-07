@@ -1,5 +1,6 @@
 package it.uniroma3.siw.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,7 +26,10 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Autowired(required = false) ClientRegistrationRepository clientRegistrationRepository,
+            @Autowired(required = false) CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
@@ -34,8 +39,9 @@ public class SecurityConfiguration {
                 // 2. Endpoint REST API pubblici (GET)
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 
-                // 3. Autenticazione & Registrazione
+                // 3. Autenticazione & Registrazione (inclusi percorsi Google OAuth2)
                 .requestMatchers("/login", "/register", "/success").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
                 // 4. Funzionalità riservate ad Amministratori (prima dei pattern generici)
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
@@ -64,8 +70,19 @@ public class SecurityConfiguration {
                 .defaultSuccessUrl("/success", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
-            )
-            .logout(logout -> logout
+            );
+
+        if (clientRegistrationRepository != null && customOAuth2UserService != null) {
+            http.oauth2Login(oauth2 -> oauth2
+                .clientRegistrationRepository(clientRegistrationRepository)
+                .loginPage("/login")
+                .defaultSuccessUrl("/success", true)
+                .failureUrl("/login?error=true")
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+            );
+        }
+
+        http.logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/?logout=true")
                 .invalidateHttpSession(true)

@@ -80,22 +80,23 @@ Il dominio applicativo è modellato tramite **8 entità JPA**:
 ## 📋 Casi d'Uso Implementati
 
 ### 1. Funzionalità Pubbliche (Accessibili da chiunque)
-- **Visualizzazione elenco dei festival** (`GET /festivals`): Elenco completo delle manifestazioni con filtri per città o nome.
+- **Visualizzazione elenco dei festival** (`GET /festivals`): Elenco completo con filtri per città o nome e paginazione server-side (`Pageable` Spring Data JPA).
 - **Visualizzazione dettaglio di un festival** (`GET /festival/{id}`): Informazioni del festival, film partecipanti al festival e programma delle relative proiezioni.
-- **Visualizzazione catalogo film** (`GET /films`): Elenco film con filtri per titolo, genere e anno.
-- **Visualizzazione dettaglio film** (`GET /film/{id}`): Dati completi del film, scheda del regista, festival a cui partecipa, proiezioni programmate e lista recensioni della community.
+- **Visualizzazione catalogo film** (`GET /films`): Elenco film con filtri per titolo, genere e anno, arricchito dal catalogo interattivo React 18.
+- **Visualizzazione dettaglio film** (`GET /film/{id}`): Dati completi del film, scheda del regista, festival a cui partecipa, proiezioni programmate, media voti e lista recensioni della community.
 - **Visualizzazione dati del regista** (`GET /regista/{id}`): Scheda biografica e filmografia completa del regista.
-- **Visualizzazione programma generale delle proiezioni** (`GET /proiezioni`): Calendario degli eventi filtrabile per festival, film e sala.
-- **Dettaglio sala cinematografica** (`GET /sala/{id}`): Informazioni della sala e calendario delle relative proiezioni programmate.
-- **Catalogo Film con Filtro React 18** (`GET /films`): Componente client-side interattivo in React con ricerca dinamica istantanea in tempo reale.
+- **Visualizzazione programma generale delle proiezioni** (`GET /proiezioni`): Calendario degli eventi filtrabile per festival, film, sala e data.
+- **Dettaglio sala cinematografica** (`GET /sala/{id}`): Informazioni sulla sala (capienza, indirizzo) e calendario delle proiezioni programmate in tale struttura.
+- **Catalogo Film con Filtro React 18** (`GET /films`): Componente client-side interattivo in React con ricerca e filtraggio dinamico istantaneo in tempo reale.
 
 ### 2. Funzionalità Utenti Registrati (Ruolo `USER`)
 - **Inserimento recensione per un film** (`GET /recensioni/nuova/{filmId}`, `POST /recensioni/salva`):
-  - È consentita **al massimo una recensione per film** da parte dello stesso utente (verificato da `RecensioneValidator` e service).
+  - È consentita **al massimo una recensione per film** da parte dello stesso utente (garantito a livello di validatore `RecensioneValidator`, service `hasUserReviewedFilm` e vincolo di tabella `@UniqueConstraint(columnNames = {"film_id", "utente_id"})`).
+  - Protezione contro ID tampering: la richiesta `POST` verifica che l'eventuale ID specificato appartenga effettivamente all'utente autenticato prima di procedere al salvataggio.
 - **Modifica di una propria recensione** (`GET /recensioni/modifica/{id}`):
-  - L'utente può modificare **esclusivamente** le recensioni di cui è l'autore.
-- **Cancellazione di una propria recensione** (`/recensioni/elimina/{id}`):
-  - Rimozione consentita solo all'autore o all'amministratore.
+  - L'utente può modificare **esclusivamente** le recensioni di cui è l'autore autenticato (o se possiede il ruolo `ADMIN`).
+- **Cancellazione di una propria recensione** (`POST /recensioni/elimina/{id}`, `GET /recensioni/elimina/{id}`):
+  - Rimozione consentita solo all'autore o all'amministratore (con supporto sia a HTTP POST protetto da CSRF che a fallback GET).
 - **Profilo personale** (`GET /profilo`):
   - Riepilogo dei dati personali e pannello di gestione delle proprie recensioni pubblicate.
 
@@ -105,11 +106,11 @@ Il dominio applicativo è modellato tramite **8 entità JPA**:
 - **CRUD completo Film** (`/films/nuovo`, `/films/modifica/{id}`, `/films/{id}/elimina`).
 - **CRUD completo Regista** (`/registi/nuovo`, `/registi/modifica/{id}`, `/registi/{id}/elimina`).
 - **CRUD completo Sala** (`/sale/nuova`, `/sale/modifica/{id}`, `/sale/{id}/elimina`).
-- **Associazione ed eliminazione di un film da un festival** (`/festivals/{id}/gestione-film`).
-- **Programmazione, modifica, cambio rapido di stato e cancellazione di una proiezione** (`/proiezioni/nuova`, `/proiezioni/modifica/{id}`, `/proiezioni/{id}/stato`, `/proiezioni/{id}/elimina`).
+- **Associazione e disassociazione di un film da un festival** (`/festivals/{id}/gestione-film`, `/festivals/{id}/film/aggiungi`, `/festivals/{id}/film/rimuovi/{filmId}`).
+- **Programmazione, modifica, cambio rapido di stato e cancellazione di una proiezione** (`/proiezioni/nuova`, `/proiezioni/modifica/{id}`, `POST /proiezioni/{id}/stato`, `/proiezioni/{id}/elimina`).
   - **Verifiche di consistenza**:
-    1. *Controllo sovrapposizioni orarie*: Verifica automatica che la sala non sia già occupata, calcolando l'intervallo temporale completo in base all'orario di inizio e alla durata del film (`ora_inizio + film.durata`).
-    2. *Controllo date festival*: La data della proiezione deve rientrare nell'intervallo di date del festival.
+    1. *Controllo sovrapposizioni orarie completo*: Verifica automatica che la sala non sia già occupata, calcolando l'intervallo temporale completo in base all'orario di inizio e alla durata del film (`ora_inizio` fino a `ora_inizio + film.durata`) rispetto a tutte le altre proiezioni della stessa sala nella stessa giornata.
+    2. *Controllo date festival*: La data della proiezione deve rientrare obbligatoriamente nell'intervallo `[dataInizio, dataFine]` del festival selezionato.
 
 ---
 
@@ -118,21 +119,22 @@ Il dominio applicativo è modellato tramite **8 entità JPA**:
 Nel service `ProiezioneService` è implementato il metodo transazionale:
 ```java
 @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-public Proiezione programmaNuovaProiezione(Long festivalId, Long filmId, Long salaId, LocalDate data, LocalTime ora)
+public Proiezione programmaNuovaProiezione(Proiezione proiezione, Long festivalId, Long filmId, Long salaId)
 ```
 Questo caso d'uso coordina contemporaneamente **4 entità** (`Festival`, `Film`, `Sala`, `Proiezione`):
-1. Recupera e verifica l'esistenza di `Festival`, `Film` e `Sala`.
-2. Verifica che non vi siano conflitti orari nella sala richiesta (`existsBySalaAndDataAndOra`).
-3. Verifica la coerenza temporale con le date del festival.
-4. Associa automaticamente il film al festival (se non ancora presente).
+1. Recupera e verifica l'esistenza di `Festival`, `Film` e `Sala` dai rispettivi repository.
+2. Verifica che non vi siano conflitti orari nella sala richiesta calcolando l'intervallo completo con la durata del film (`hasRoomConflict`).
+3. Verifica la coerenza temporale con le date del festival (`proiezione.data` compresa tra `dataInizio` e `dataFine`).
+4. Associa automaticamente il film al festival (se non ancora presente nella collezione).
 5. Crea e salva la nuova proiezione con stato iniziale `SCHEDULED`.
-6. In caso di errore o conflitto, scatta il **rollback automatico** della transazione.
+6. In caso di errore o conflitto di consistenza, scatta il **rollback automatico** dell'intera transazione.
+7. Viene invocato direttamente dal controller web `ProiezioneController.saveProiezione` in fase di creazione di una nuova proiezione, garantendo atomicità fin dall'interfaccia utente.
 
 ---
 
 ## ⚛️ Frontend React & Integrazione REST
 
-Nella pagina del catalogo film (template [film/list.html](file:///Users/lucacarbonetti/SIW/Siw_Cinema/siw/src/main/resources/templates/film/list.html)) è integrata un'interfaccia di ricerca dinamica sviluppata in **React 18**:
+Nella pagina del catalogo film (template [film/list.html](siw/src/main/resources/templates/film/list.html)) è integrata un'interfaccia di ricerca dinamica sviluppata in **React 18**:
 - Il componente `FilmCatalogApp` utilizza gli Hooks (`useState`, `useEffect`).
 - Effettua la chiamata asincrona `fetch('/api/movies')` per caricare in tempo reale l'intero catalogo film in formato JSON.
 - Permette di filtrare istantaneamente i film per **Titolo**, **Genere**, **Regista** e **Anno** in tempo reale (client-side) senza ricaricare la pagina HTML.
@@ -189,15 +191,41 @@ Gli errori generano risposte JSON standardizzate:
 
 ## 🚀 Guida all'Avvio e Configurazione
 
-### 1. Configurazione Database PostgreSQL
-Assicurarsi che PostgreSQL sia in esecuzione su `localhost:5432` con il database `siw_cinema`.  
-Parametri in `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/siw_cinema
-spring.datasource.username=lucacarbonetti
-spring.datasource.password=Lcarbo05
-spring.jpa.hibernate.ddl-auto=update
+### 1. Configurazione Ambiente con file `.env`
+Il progetto è predisposto per caricare automaticamente la configurazione e le credenziali sensibili da un file `.env` (collocato nella root del progetto o nella cartella `siw/`).
+
+All'avvio, la classe `DotenvEnvironmentPostProcessor` carica le variabili definite in `.env` e le inietta nelle proprietà di Spring Boot.
+
+È possibile compilare il file `.env` partendo da `.env.example`:
+```env
+# Database PostgreSQL
+DB_NAME=siw_cinema
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=tua_password_postgres
+
+# Google OAuth2 (opzionale)
+GOOGLE_CLIENT_ID=tuo_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=tuo_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:8080/login/oauth2/code/google
 ```
+
+In `application.properties`, le proprietà sono collegate alle variabili d'ambiente con fallback di default:
+```properties
+spring.datasource.url=jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:siw_cinema}
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD:postgres}
+
+google.oauth.client-id=${GOOGLE_CLIENT_ID:}
+google.oauth.client-secret=${GOOGLE_CLIENT_SECRET:}
+```
+
+> [!NOTE]
+> **Dual-Login & Tolleranza ai Guasti (Exam-Ready)**:
+> - Il sistema supporta sia l'autenticazione classica tramite **Form Login** (username/password cifrata BCrypt) sia il login federato **Google OAuth2**.
+> - Se `GOOGLE_CLIENT_ID` o `GOOGLE_CLIENT_SECRET` non sono valorizzati nel file `.env`, l'applicazione rileva l'assenza tramite `GoogleOAuthCondition` e **non fallisce all'avvio**, disabilitando selettivamente il tasto OAuth2 e mantenendo attivo il form login con gli account di test.
+> - Al primo login con Google, l'utente e le credenziali locali vengono auto-provisionati in modo trasparente (`CustomOAuth2UserService`) con ruolo predefinito `USER`, prevenendo privilege escalation.
 
 ### 2. Avvio dell'Applicazione
 Dalla cartella principale del progetto:
@@ -212,6 +240,15 @@ Il progetto include una suite completa di test unitari, di integrazione, di sicu
 ```bash
 ./mvnw test
 ```
+
+### 4. Analisi Sperimentale N+1 e Prestazioni JPA (Sez. 8.2)
+Per verificare sperimentalmente le prestazioni di accesso ai dati e il confronto tra fetch LAZY non ottimizzato e `JOIN FETCH`:
+```bash
+./mvnw test -Dtest=DataAccessPerformanceAnalysisTest
+```
+Il test confronta sul medesimo dataset:
+- **Strategia 1 (LAZY standard):** genera **13 query SQL** (1 query iniziale + query separate per ciascuna entità collegata Festival, Film, Sala), evidenziando il problema N+1.
+- **Strategia 2 (`JOIN FETCH` ottimizzato):** esegue **1 singola query SQL** con `INNER JOIN`, riducendo le query del 92% e abbattendo i tempi di risposta.
 
 ---
 

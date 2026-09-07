@@ -7,6 +7,7 @@ import it.uniroma3.siw.validator.CredentialsValidator;
 import it.uniroma3.siw.validator.UtenteValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,16 +28,20 @@ public class AuthenticationController {
     @Autowired
     private UtenteValidator utenteValidator;
 
+    @Autowired(required = false)
+    private ClientRegistrationRepository clientRegistrationRepository;
+
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "registered", required = false) String registered,
                                 Model model) {
         if (error != null) {
-            model.addAttribute("errorMessage", "Credenziali non valide. Riprova.");
+            model.addAttribute("errorMessage", "Credenziali non valide o autenticazione annullata. Riprova.");
         }
         if (registered != null) {
             model.addAttribute("successMessage", "Registrazione completata con successo! Ora puoi effettuare il login.");
         }
+        model.addAttribute("googleAuthEnabled", clientRegistrationRepository != null);
         return "auth/login";
     }
 

@@ -109,7 +109,7 @@ public Proiezione programmaNuovaProiezione(Proiezione proiezione, Long festivalI
 ```
 1. **Recupera Festival, Film e Sala** dai rispettivi repository verificandone l'esistenza.
 2. **Verifica coerenza temporale**: la data della proiezione deve rientrare tra `dataInizio` e `dataFine` del festival.
-3. **Verifica disponibilità della sala**: controlla con `findConflictingProjections` che la sala non sia già occupata alla stessa data e ora.
+3. **Verifica disponibilità della sala**: controlla tramite `hasRoomConflict` che la sala non presenti sovrapposizioni temporali nell'intervallo calcolato con la durata del film (`ora_inizio` fino a `ora_inizio + durata`).
 4. **Aggiorna l'associazione**: se il film non è ancora presente tra i partecipanti al festival, lo aggiunge e aggiorna il festival.
 5. **Salva la proiezione** con stato iniziale `SCHEDULED`.
 6. **Atomicità & Rollback**: Se uno qualsiasi dei controlli fallisce (es. sala occupata o data errata), viene sollevata un'eccezione che attiva il rollback automatico della transazione, lasciando il database in uno stato perfettamente consistente.
@@ -126,7 +126,7 @@ public Proiezione programmaNuovaProiezione(Proiezione proiezione, Long festivalI
   - `USER`: utente registrato standard.
   - `ADMIN`: amministratore di sistema.
 - **Autorizzazione per Percorso**:
-  - Pagine pubbliche (`/`, `/festivals`, `/films`, `/proiezioni`) e risorse statiche: accessibili liberamente (`permitAll`).
+  - Pagine pubbliche (`/`, `/festivals`, `/films`, `/proiezioni`, `/regista/**`, `/sala/**`) e risorse statiche: accessibili liberamente (`permitAll`).
   - Creazione/modifica/cancellazione e `/admin/**`: accessibili **solo ad `ADMIN`** (`hasAuthority("ADMIN")`).
   - Recensioni e profilo (`/recensioni/**`, `/profilo/**`): accessibili solo ad utenti autenticati.
 
@@ -134,21 +134,22 @@ public Proiezione programmaNuovaProiezione(Proiezione proiezione, Long festivalI
 **R:**
 1. Il metodo `canUserModify(recensione, currentUser, isAdmin)` in `RecensioneService` confronta l'ID dell'utente autenticato con quello dell'autore della recensione (`recensione.getAutore().equals(currentUser)`).
 2. Nel `RecensioneController` (e in `RecensioneRestController`), se l'utente che richiede la modifica o cancellazione non è l'autore (e non è admin), l'operazione viene rifiutata restituendo un errore o lo stato `403 Forbidden`.
-3. Viene garantito il vincolo di unicità: un utente può inserire **al massimo 1 recensione per ciascun film** (verificato tramite `RecensioneValidator` e `hasUserReviewedFilm`).
+3. Nel salvataggio via POST (`/recensioni/salva`), se è presente un ID viene controllata l'appartenenza prima del salvataggio, bloccando attacchi di ID tampering.
+4. Viene garantito il vincolo di unicità: un utente può inserire **al massimo 1 recensione per ciascun film** (verificato tramite `RecensioneValidator`, vincolo di tabella `@UniqueConstraint` e `hasUserReviewedFilm`).
 
 ---
 
 ## 6. Frontend React e Integrazione REST
 
 ### D: Come è integrato React nel progetto?
-**R:** Il frontend include una sezione dinamica in React direttamente all'interno della pagina di catalogo e ricerca film ([film/list.html](file:///Users/lucacarbonetti/SIW/Siw_Cinema/siw/src/main/resources/templates/film/list.html)):
+**R:** Il frontend include una sezione dinamica in React direttamente all'interno della pagina di catalogo e ricerca film ([film/list.html](siw/src/main/resources/templates/film/list.html)):
 - È integrato **direttamente nel template HTML** tramite script CDN (React 18, ReactDOM e Babel standalone), rendendolo pulito, leggero e autosufficiente senza richiedere configurazioni complesse come Webpack o Node.js.
 - Il componente React `FilmCatalogApp` gestisce lo stato dei filtri tramite gli Hooks (`useState`, `useEffect`).
 - Comunica con il backend Spring Boot effettuando la chiamata asincrona `fetch('/api/movies')` per caricare in memoria il catalogo film.
 - Fornisce una barra di ricerca e filtri combinati in tempo reale (Titolo, Genere, Regista, Anno) con aggiornamento istantaneo del catalogo e conteggio risultati senza dover ricaricare la pagina web.
 
 ### D: Come vengono gestiti gli errori nelle API REST?
-**R:** Tramite la classe `@RestControllerAdvice` ([RestExceptionHandler.java](file:///Users/lucacarbonetti/SIW/Siw_Cinema/siw/src/main/java/it/uniroma3/siw/controller/rest/RestExceptionHandler.java)):
+**R:** Tramite la classe `@RestControllerAdvice` ([RestExceptionHandler.java](siw/src/main/java/it/uniroma3/siw/controller/rest/RestExceptionHandler.java)):
 - Intercetta eccezioni e restituisce risposte JSON standardizzate contenenti `timestamp`, codice `status` HTTP (`400`, `403`, `404`, `409`), descrizione `error`, messaggio `message` e `path`.
 
 ---
@@ -157,25 +158,25 @@ public Proiezione programmaNuovaProiezione(Proiezione proiezione, Long festivalI
 
 ### D: Quali funzionalità bonus sono state implementate nel progetto?
 **R:**
-1. **Paginazione**:
-   - Implementata con Spring Data `Pageable` e `Page<T>` in `FilmRepository` e `FestivalRepository`, con controlli di navigazione (Precedente, Pagina X di Y, Successiva) e clausole SQL `LIMIT`/`OFFSET`.
+1. **Paginazione Server-Side**:
+   - Implementata con Spring Data `Pageable` e `Page<T>` in `FestivalRepository` e `FestivalService`, con navigazione a pagine e query ottimizzate con `LIMIT`/`OFFSET`.
 2. **Ricerca Avanzata & Filtri Combinati**:
-   - Ricerca film combinabile per **Titolo** (parziale case-insensitive), **Genere**, **Regista** (menu a tendina) e **Anno**.
-3. **Ricerca Proiezioni per Data**:
-   - Filtro temporale da calendario HTML5 (`<input type="date">`) combinabile con Festival, Film e Sala.
-4. **Upload di Locandine/Immagini (Multipart & Base64)**:
-   - Caricamento di file immagine locali tramite `MultipartFile`, convertiti automaticamente in Data URL Base64 memorizzati nel database.
-5. **Statistiche sulle Recensioni**:
-   - Calcolo e visualizzazione grafica nella scheda film del punteggio medio, tasso di gradimento (%) e 5 barre di progressione percentuali per i voti da 1★ a 5★.
+   - Ricerca film combinabile per **Titolo** (case-insensitive), **Genere**, **Regista** e **Anno**.
+3. **Ricerca Proiezioni Multi-Criterio**:
+   - Filtro combinabile per Festival, Film, Sala e Data specifica.
+4. **Upload di Locandine/Immagini (Multipart & Base64 Data URL)**:
+   - Caricamento di file grafici locali tramite `MultipartFile` convertiti in Base64 Data URL per la massima portabilità del DB.
+5. **CRUD Completo per l'Amministratore**:
+   - Gestione completa (Create, Read, Update, Delete con protezione CSRF e schede di dettaglio) per Festival, Film, Registi, Sale e Proiezioni.
 6. **Documentazione Dedicata delle API REST**:
-   - File [REST_API.md](file:///Users/lucacarbonetti/SIW/Siw_Cinema/REST_API.md) dettagliato con tutti gli endpoint, query parameters, codici HTTP e payload JSON di esempio.
+   - File [REST_API.md](REST_API.md) dettagliato con tutti gli endpoint, query parameters, codici HTTP e payload JSON di esempio.
 
 ---
 
 ## 8. Analisi Sperimentale dell'Accesso ai Dati (Sezione 8.2)
 
 ### D: Come mostrare durante l'esame il comportamento di JPA/Hibernate e il confronto tra strategie di fetch?
-**R:** È stato predisposto il test eseguibile [DataAccessPerformanceAnalysisTest.java](file:///Users/lucacarbonetti/SIW/Siw_Cinema/siw/src/test/java/it/uniroma3/siw/DataAccessPerformanceAnalysisTest.java).
+**R:** È stato predisposto il test eseguibile [DataAccessPerformanceAnalysisTest.java](siw/src/test/java/it/uniroma3/siw/DataAccessPerformanceAnalysisTest.java).
 
 #### Comando per eseguirlo durante l'esame:
 ```bash
