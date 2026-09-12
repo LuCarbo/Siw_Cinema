@@ -34,11 +34,11 @@ public class Recensione {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "film_id", nullable = false)
     private Film film;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "utente_id", nullable = false)
     private Utente autore;
 

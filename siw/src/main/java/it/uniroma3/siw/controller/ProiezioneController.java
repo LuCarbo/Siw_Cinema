@@ -2,7 +2,6 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.*;
 import it.uniroma3.siw.service.*;
-import it.uniroma3.siw.validator.ProiezioneValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,9 +26,6 @@ public class ProiezioneController {
 
     @Autowired
     private SalaService salaService;
-
-    @Autowired
-    private ProiezioneValidator proiezioneValidator;
 
     @GetMapping("/proiezioni")
     public String listProiezioni(@RequestParam(value = "festivalId", required = false) Long festivalId,
@@ -57,19 +53,17 @@ public class ProiezioneController {
             return "redirect:/proiezioni";
         }
         model.addAttribute("proiezione", proiezione);
+        model.addAttribute("stati", StatoProiezione.values());
         return "proiezione/detail";
     }
 
     @GetMapping("/proiezioni/nuova")
     public String showCreateProiezioneForm(@RequestParam(value = "festivalId", required = false) Long festivalId,
-                                           @RequestParam(value = "filmId", required = false) Long filmId,
                                            Model model) {
         Proiezione proiezione = new Proiezione();
         if (festivalId != null) {
-            proiezione.setFestival(festivalService.getFestival(festivalId));
-        }
-        if (filmId != null) {
-            proiezione.setFilm(filmService.getFilm(filmId));
+            Festival festival = festivalService.getFestival(festivalId);
+            proiezione.setFestival(festival);
         }
 
         model.addAttribute("proiezione", proiezione);
@@ -95,8 +89,6 @@ public class ProiezioneController {
         proiezione.setFestival(festival);
         proiezione.setFilm(film);
         proiezione.setSala(sala);
-
-        proiezioneValidator.validate(proiezione, bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("festivals", festivalService.getAllFestivals());

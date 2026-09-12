@@ -1,5 +1,6 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Sala;
 import it.uniroma3.siw.repository.SalaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,19 @@ public class SalaService {
 
     @Transactional
     public Sala saveSala(Sala sala) {
+        if (sala.getNome() != null && sala.getIndirizzo() != null) {
+            String nome = sala.getNome().trim();
+            String indirizzo = sala.getIndirizzo().trim();
+            if (sala.getId() == null) {
+                if (salaRepository.existsByNomeAndIndirizzo(nome, indirizzo)) {
+                    throw new DuplicateEntityException("Una sala con questo nome e indirizzo esiste già.");
+                }
+            } else {
+                if (salaRepository.existsByNomeAndIndirizzoAndIdNot(nome, indirizzo, sala.getId())) {
+                    throw new DuplicateEntityException("Un'altra sala con questo nome e indirizzo esiste già.");
+                }
+            }
+        }
         return salaRepository.save(sala);
     }
 

@@ -162,6 +162,23 @@ public class ProiezioneService {
     public Proiezione saveProiezione(Proiezione proiezione) {
         Festival festival = proiezione.getFestival();
         Film film = proiezione.getFilm();
+        Sala sala = proiezione.getSala();
+
+        if (festival != null && proiezione.getData() != null) {
+            if (proiezione.getData().isBefore(festival.getDataInizio()) || proiezione.getData().isAfter(festival.getDataFine())) {
+                throw new IllegalStateException("La data della proiezione (" + proiezione.getData() + 
+                        ") non rientra nelle date del festival (" + festival.getDataInizio() + " - " + festival.getDataFine() + ")");
+            }
+        }
+
+        if (sala != null && proiezione.getData() != null && proiezione.getOra() != null && film != null) {
+            int durata = (film.getDurata() != null) ? film.getDurata() : 120;
+            if (hasRoomConflict(sala, proiezione.getData(), proiezione.getOra(), durata, proiezione.getId())) {
+                throw new IllegalStateException("La sala " + sala.getNome() + " è già occupata per la data " + 
+                        proiezione.getData() + " nell'intervallo orario richiesto (in sovrapposizione con la durata di un'altra proiezione).");
+            }
+        }
+
         if (festival != null && film != null && !festival.getFilm().contains(film)) {
             festival.addFilm(film);
             festivalRepository.save(festival);

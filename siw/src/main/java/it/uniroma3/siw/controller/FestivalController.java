@@ -4,7 +4,7 @@ import it.uniroma3.siw.model.Festival;
 import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.service.FestivalService;
 import it.uniroma3.siw.service.FilmService;
-import it.uniroma3.siw.validator.FestivalValidator;
+import it.uniroma3.siw.exception.BusinessException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,9 +24,6 @@ public class FestivalController {
 
     @Autowired
     private FilmService filmService;
-
-    @Autowired
-    private FestivalValidator festivalValidator;
 
     @GetMapping("/festivals")
     public String listFestivals(@RequestParam(value = "citta", required = false) String citta,
@@ -66,8 +63,6 @@ public class FestivalController {
                                BindingResult bindingResult,
                                @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
                                Model model) {
-        festivalValidator.validate(festival, bindingResult);
-
         if (bindingResult.hasErrors()) {
             return "festival/form";
         }
@@ -82,8 +77,17 @@ public class FestivalController {
             }
         }
 
-        festivalService.saveFestival(festival);
-        return "redirect:/festival/" + festival.getId();
+        try {
+            festivalService.saveFestival(festival);
+            return "redirect:/festival/" + festival.getId();
+        } catch (BusinessException e) {
+            if (e.getField() != null) {
+                bindingResult.rejectValue(e.getField(), "festival.error", e.getMessage());
+            } else {
+                bindingResult.reject("festival.duplicate", e.getMessage());
+            }
+            return "festival/form";
+        }
     }
 
     @GetMapping("/festivals/modifica/{id}")

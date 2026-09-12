@@ -1,5 +1,6 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Festival;
 import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.model.Regista;
@@ -87,11 +88,13 @@ public class FilmService {
 
     @Transactional
     public Film saveFilm(Film film) {
+        validateFilmUniqueness(film);
         return filmRepository.save(film);
     }
 
     @Transactional
     public Film saveFilmWithRegista(Film film, Long registaId) {
+        validateFilmUniqueness(film);
         if (registaId != null) {
             Regista regista = registaService.getRegista(registaId);
             film.setRegista(regista);
@@ -99,6 +102,21 @@ public class FilmService {
             film.setRegista(null);
         }
         return filmRepository.save(film);
+    }
+
+    private void validateFilmUniqueness(Film film) {
+        if (film.getTitolo() != null && film.getAnno() != null) {
+            String titolo = film.getTitolo().trim();
+            if (film.getId() == null) {
+                if (filmRepository.existsByTitoloAndAnno(titolo, film.getAnno())) {
+                    throw new DuplicateEntityException("Un film con questo titolo e per questo anno è già presente nel catalogo.");
+                }
+            } else {
+                if (filmRepository.existsByTitoloAndAnnoAndIdNot(titolo, film.getAnno(), film.getId())) {
+                    throw new DuplicateEntityException("Un altro film con questo titolo e per questo anno è già presente nel catalogo.");
+                }
+            }
+        }
     }
 
     @Transactional

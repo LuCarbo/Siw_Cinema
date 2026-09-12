@@ -3,7 +3,7 @@ package it.uniroma3.siw.controller;
 import it.uniroma3.siw.model.Sala;
 import it.uniroma3.siw.service.ProiezioneService;
 import it.uniroma3.siw.service.SalaService;
-import it.uniroma3.siw.validator.SalaValidator;
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +19,6 @@ public class SalaController {
 
     @Autowired
     private ProiezioneService proiezioneService;
-
-    @Autowired
-    private SalaValidator salaValidator;
 
     @GetMapping("/sala/{id}")
     public String getSala(@PathVariable("id") Long id, Model model) {
@@ -44,14 +41,17 @@ public class SalaController {
     public String saveSala(@Valid @ModelAttribute("sala") Sala sala,
                           BindingResult bindingResult,
                           Model model) {
-        salaValidator.validate(sala, bindingResult);
-
         if (bindingResult.hasErrors()) {
             return "sala/form";
         }
 
-        salaService.saveSala(sala);
-        return "redirect:/admin/dashboard";
+        try {
+            salaService.saveSala(sala);
+            return "redirect:/admin/dashboard";
+        } catch (DuplicateEntityException e) {
+            bindingResult.reject("sala.duplicate", e.getMessage());
+            return "sala/form";
+        }
     }
 
     @GetMapping("/sale/modifica/{id}")

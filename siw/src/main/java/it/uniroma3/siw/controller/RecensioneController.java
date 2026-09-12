@@ -7,7 +7,7 @@ import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredentialsService;
 import it.uniroma3.siw.service.FilmService;
 import it.uniroma3.siw.service.RecensioneService;
-import it.uniroma3.siw.validator.RecensioneValidator;
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,9 +29,6 @@ public class RecensioneController {
     @Autowired
     private CredentialsService credentialsService;
 
-    @Autowired
-    private RecensioneValidator recensioneValidator;
-
     @GetMapping("/nuova/{filmId}")
     public String showCreateRecensioneForm(@PathVariable("filmId") Long filmId, Model model) {
         Film film = filmService.getFilm(filmId);
@@ -40,27 +37,19 @@ public class RecensioneController {
         }
 
         Utente currentUser = credentialsService.getCurrentUser();
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
-
-        // Se l'utente ha già recensito il film, reindirizza alla modifica
-        Optional<Recensione> existing = recensioneService.getRecensioneByUserAndFilm(film, currentUser);
-        if (existing.isPresent()) {
-            return "redirect:/recensioni/modifica/" + existing.get().getId();
+        if (currentUser != null && recensioneService.hasUserReviewedFilm(film, currentUser)) {
+            return "redirect:/film/" + filmId;
         }
 
         Recensione recensione = new Recensione();
         recensione.setFilm(film);
-        recensione.setAutore(currentUser);
-
         model.addAttribute("recensione", recensione);
         model.addAttribute("film", film);
         return "recensione/form";
     }
 
     @PostMapping("/salva")
-    public String saveRecensione(@ModelAttribute("recensione") Recensione recensione,
+    public String saveRecensione(@Valid @ModelAttribute("recensione") Recensione recensione,
                                  BindingResult bindingResult,
                                  @RequestParam("filmId") Long filmId,
                                  Model model) {
@@ -96,15 +85,19 @@ public class RecensioneController {
         recensione.setFilm(film);
         recensione.setAutore(currentUser);
 
-        recensioneValidator.validate(recensione, bindingResult);
-
         if (bindingResult.hasErrors()) {
             model.addAttribute("film", film);
             return "recensione/form";
         }
 
-        recensioneService.saveRecensione(recensione);
-        return "redirect:/film/" + filmId;
+        try {
+            recensioneService.saveRecensione(recensione);
+            return "redirect:/film/" + filmId;
+        } catch (DuplicateEntityException e) {
+            bindingResult.reject("recensione.duplicate", e.getMessage());
+            model.addAttribute("film", film);
+            return "recensione/form";
+        }
     }
 
     @GetMapping("/modifica/{id}")

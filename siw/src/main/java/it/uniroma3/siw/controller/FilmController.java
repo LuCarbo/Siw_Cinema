@@ -7,7 +7,7 @@ import it.uniroma3.siw.service.CredentialsService;
 import it.uniroma3.siw.service.FilmService;
 import it.uniroma3.siw.service.RecensioneService;
 import it.uniroma3.siw.service.RegistaService;
-import it.uniroma3.siw.validator.FilmValidator;
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,9 +32,6 @@ public class FilmController {
 
     @Autowired
     private CredentialsService credentialsService;
-
-    @Autowired
-    private FilmValidator filmValidator;
 
     @GetMapping("/films")
     public String listFilms(Model model) {
@@ -78,8 +75,6 @@ public class FilmController {
                            @RequestParam(value = "registaId", required = false) Long registaId,
                            @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
                            Model model) {
-        filmValidator.validate(film, bindingResult);
-
         if (bindingResult.hasErrors()) {
             model.addAttribute("registi", registaService.getAllRegisti());
             return "film/form";
@@ -95,8 +90,14 @@ public class FilmController {
             }
         }
 
-        filmService.saveFilmWithRegista(film, registaId);
-        return "redirect:/film/" + film.getId();
+        try {
+            filmService.saveFilmWithRegista(film, registaId);
+            return "redirect:/film/" + film.getId();
+        } catch (DuplicateEntityException e) {
+            bindingResult.reject("film.duplicate", e.getMessage());
+            model.addAttribute("registi", registaService.getAllRegisti());
+            return "film/form";
+        }
     }
 
     @GetMapping("/films/modifica/{id}")

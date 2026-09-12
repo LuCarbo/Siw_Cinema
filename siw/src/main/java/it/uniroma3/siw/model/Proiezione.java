@@ -28,17 +28,17 @@ public class Proiezione {
     private StatoProiezione stato;
 
     @NotNull(message = "{proiezione.festival.notnull}")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "festival_id", nullable = false)
     private Festival festival;
 
     @NotNull(message = "{proiezione.film.notnull}")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "film_id", nullable = false)
     private Film film;
 
     @NotNull(message = "{proiezione.sala.notnull}")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;
 

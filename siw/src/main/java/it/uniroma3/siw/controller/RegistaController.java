@@ -2,7 +2,7 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Regista;
 import it.uniroma3.siw.service.RegistaService;
-import it.uniroma3.siw.validator.RegistaValidator;
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,9 +15,6 @@ public class RegistaController {
 
     @Autowired
     private RegistaService registaService;
-
-    @Autowired
-    private RegistaValidator registaValidator;
 
     @GetMapping("/regista/{id}")
     public String getRegista(@PathVariable("id") Long id, Model model) {
@@ -39,14 +36,17 @@ public class RegistaController {
     public String saveRegista(@Valid @ModelAttribute("regista") Regista regista,
                              BindingResult bindingResult,
                              Model model) {
-        registaValidator.validate(regista, bindingResult);
-
         if (bindingResult.hasErrors()) {
             return "regista/form";
         }
 
-        registaService.saveRegista(regista);
-        return "redirect:/regista/" + regista.getId();
+        try {
+            registaService.saveRegista(regista);
+            return "redirect:/regista/" + regista.getId();
+        } catch (DuplicateEntityException e) {
+            bindingResult.reject("regista.duplicate", e.getMessage());
+            return "regista/form";
+        }
     }
 
     @GetMapping("/registi/modifica/{id}")

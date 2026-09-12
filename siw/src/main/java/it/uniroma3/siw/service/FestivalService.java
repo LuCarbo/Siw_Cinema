@@ -1,5 +1,7 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.BusinessException;
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Festival;
 import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.repository.FestivalRepository;
@@ -65,6 +67,23 @@ public class FestivalService {
 
     @Transactional
     public Festival saveFestival(Festival festival) {
+        if (festival.getDataInizio() != null && festival.getDataFine() != null) {
+            if (festival.getDataFine().isBefore(festival.getDataInizio())) {
+                throw new BusinessException("dataFine", "La data di fine festival deve essere successiva o uguale alla data di inizio.");
+            }
+        }
+        if (festival.getNome() != null && festival.getAnno() != null) {
+            String nome = festival.getNome().trim();
+            if (festival.getId() == null) {
+                if (festivalRepository.existsByNomeAndAnno(nome, festival.getAnno())) {
+                    throw new DuplicateEntityException("Un festival con questo nome e per questo anno esiste già.");
+                }
+            } else {
+                if (festivalRepository.existsByNomeAndAnnoAndIdNot(nome, festival.getAnno(), festival.getId())) {
+                    throw new DuplicateEntityException("Un altro festival con questo nome e per questo anno esiste già.");
+                }
+            }
+        }
         return festivalRepository.save(festival);
     }
 

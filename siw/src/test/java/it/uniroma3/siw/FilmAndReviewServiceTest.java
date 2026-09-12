@@ -65,5 +65,9 @@ class FilmAndReviewServiceTest {
         savedFilm.setRecensioni(reviews);
         assertEquals(4.5, savedFilm.getMediaVoti());
         assertEquals(2, savedFilm.getNumeroRecensioni());
+
+        // Verifica che una seconda recensione dallo stesso utente per lo stesso film sollevi DuplicateEntityException
+        Recensione r3Duplicate = new Recensione("Duplicato", "Test testo", 3, savedFilm, savedUser1);
+        assertThrows(it.uniroma3.siw.exception.DuplicateEntityException.class, () -> recensioneService.saveRecensione(r3Duplicate));
     }
 }

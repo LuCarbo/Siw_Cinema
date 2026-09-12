@@ -1,10 +1,10 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.CredentialsRepository;
 import it.uniroma3.siw.repository.UtenteRepository;
-import it.uniroma3.siw.security.CustomOAuth2User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,6 +50,16 @@ public class CredentialsService {
 
     @Transactional
     public Credentials saveCredentials(Credentials credentials) {
+        if (credentials.getId() == null && credentials.getUsername() != null 
+                && credentialsRepository.existsByUsername(credentials.getUsername().trim())) {
+            throw new DuplicateEntityException("username", "Questo username è già in uso. Scegline un altro.");
+        }
+        if (credentials.getUser() != null && credentials.getUser().getEmail() != null) {
+            String email = credentials.getUser().getEmail().trim();
+            if (credentials.getUser().getId() == null && utenteRepository.existsByEmail(email)) {
+                throw new DuplicateEntityException("email", "Questa email è già associata a un account.");
+            }
+        }
         if (credentials.getRole() == null) {
             credentials.setRole(Credentials.DEFAULT_ROLE);
         }
@@ -72,8 +82,6 @@ public class CredentialsService {
         String username;
         if (principal instanceof UserDetails userDetails) {
             username = userDetails.getUsername();
-        } else if (principal instanceof CustomOAuth2User customOAuth2User) {
-            username = customOAuth2User.getUsername();
         } else if (principal instanceof OAuth2User oauth2User) {
             String email = oauth2User.getAttribute("email");
             username = (email != null && !email.trim().isEmpty()) ? email : oauth2User.getName();

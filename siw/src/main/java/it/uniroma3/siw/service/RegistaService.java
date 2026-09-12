@@ -1,5 +1,6 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Regista;
 import it.uniroma3.siw.repository.RegistaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,19 @@ public class RegistaService {
 
     @Transactional
     public Regista saveRegista(Regista regista) {
+        if (regista.getNome() != null && regista.getCognome() != null && regista.getDataNascita() != null) {
+            String nome = regista.getNome().trim();
+            String cognome = regista.getCognome().trim();
+            if (regista.getId() == null) {
+                if (registaRepository.existsByNomeAndCognomeAndDataNascita(nome, cognome, regista.getDataNascita())) {
+                    throw new DuplicateEntityException("Un regista con lo stesso nome, cognome e data di nascita è già presente.");
+                }
+            } else {
+                if (registaRepository.existsByNomeAndCognomeAndDataNascitaAndIdNot(nome, cognome, regista.getDataNascita(), regista.getId())) {
+                    throw new DuplicateEntityException("Un altro regista con lo stesso nome, cognome e data di nascita è già presente.");
+                }
+            }
+        }
         return registaRepository.save(regista);
     }
 

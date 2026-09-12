@@ -1,10 +1,9 @@
 package it.uniroma3.siw.controller;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredentialsService;
-import it.uniroma3.siw.validator.CredentialsValidator;
-import it.uniroma3.siw.validator.UtenteValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -21,12 +20,6 @@ public class AuthenticationController {
 
     @Autowired
     private CredentialsService credentialsService;
-
-    @Autowired
-    private CredentialsValidator credentialsValidator;
-
-    @Autowired
-    private UtenteValidator utenteValidator;
 
     @Autowired(required = false)
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -59,18 +52,26 @@ public class AuthenticationController {
                                BindingResult credentialsBindingResult,
                                Model model) {
 
-        this.utenteValidator.validate(utente, utenteBindingResult);
-        this.credentialsValidator.validate(credentials, credentialsBindingResult);
-
         if (utenteBindingResult.hasErrors() || credentialsBindingResult.hasErrors()) {
             return "auth/register";
         }
 
         credentials.setUser(utente);
         credentials.setRole(Credentials.DEFAULT_ROLE);
-        this.credentialsService.saveCredentials(credentials);
 
-        return "redirect:/login?registered=true";
+        try {
+            this.credentialsService.saveCredentials(credentials);
+            return "redirect:/login?registered=true";
+        } catch (DuplicateEntityException e) {
+            if ("username".equals(e.getField())) {
+                credentialsBindingResult.rejectValue("username", "credentials.username.duplicate", e.getMessage());
+            } else if ("email".equals(e.getField())) {
+                utenteBindingResult.rejectValue("email", "utente.email.duplicate", e.getMessage());
+            } else {
+                credentialsBindingResult.reject("duplicate", e.getMessage());
+            }
+            return "auth/register";
+        }
     }
 
     @GetMapping("/success")

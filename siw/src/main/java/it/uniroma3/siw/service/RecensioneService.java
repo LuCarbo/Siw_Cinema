@@ -1,5 +1,6 @@
 package it.uniroma3.siw.service;
 
+import it.uniroma3.siw.exception.DuplicateEntityException;
 import it.uniroma3.siw.model.Film;
 import it.uniroma3.siw.model.Recensione;
 import it.uniroma3.siw.model.Utente;
@@ -49,6 +50,14 @@ public class RecensioneService {
 
     @Transactional
     public Recensione saveRecensione(Recensione recensione) {
+        if (recensione.getFilm() != null && recensione.getAutore() != null) {
+            Optional<Recensione> existing = recensioneRepository.findByFilmAndAutore(recensione.getFilm(), recensione.getAutore());
+            if (existing.isPresent()) {
+                if (recensione.getId() == null || !existing.get().getId().equals(recensione.getId())) {
+                    throw new DuplicateEntityException("Hai già inserito una recensione per questo film. Puoi modificare quella esistente.");
+                }
+            }
+        }
         if (recensione.getData() == null) {
             recensione.setData(LocalDate.now());
         }

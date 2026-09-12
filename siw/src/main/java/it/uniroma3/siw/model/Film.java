@@ -34,7 +34,7 @@ public class Film {
     @Column(columnDefinition = "TEXT")
     private String locandina;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "regista_id")
     private Regista regista;
 

@@ -1,1 +1,1 @@
-org.springframework.boot.env.EnvironmentPostProcessor=it.uniroma3.siw.config.DotenvEnvironmentPostProcessor
+# Gestione .env delegata alla dependency ufficiale springboot-dotenv e spring.config.import
